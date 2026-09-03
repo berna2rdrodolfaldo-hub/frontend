@@ -11,12 +11,7 @@ function LoginPage() {
   const [error, setError] = useState("");
 
   if (authRepository.isAuthenticated()) {
-    const user = authRepository.getCurrentUser();
-
-    if (user?.role === "ADMIN") {
-      return <Navigate to="/admin" replace />;
-    }
-
+    // Redirigir siempre a la página principal sin importar el rol
     return <Navigate to="/" replace />;
   }
 
@@ -30,11 +25,8 @@ function LoginPage() {
       return;
     }
 
-    if (user.role === "ADMIN") {
-      navigate("/admin", { replace: true });
-    } else {
-      navigate("/", { replace: true });
-    }
+    // Redirección unificada al Inicio para todos los usuarios
+    navigate("/", { replace: true });
   };
 
   return (

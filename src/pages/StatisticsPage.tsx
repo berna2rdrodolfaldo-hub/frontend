@@ -1,26 +1,28 @@
 
 import Sidebar from "../components/Sidebar";
-import { stations } from "../data/stations";
+import { stations as initialStations } from "../data/stations";
 import "./StatisticsPage.css";
 
 function StatisticsPage() {
+  const savedStations = localStorage.getItem("sas_stations");
+  const stations = savedStations ? JSON.parse(savedStations) : initialStations;
 
   const total = stations.length;
 
   const open = stations.filter(
-    (station) => station.open
+    (station: any) => station.open
   ).length;
 
   const closed = total - open;
 
   const fuel = stations.filter(
-    (station) => station.fuel
+    (station: any) => station.fuel
   ).length;
 
   const noFuel = total - fuel;
 
   const totalQueue = stations.reduce(
-    (sum, station) => sum + station.queue,
+    (sum: number, station: any) => sum + (station.queue || 0),
     0
   );
 
@@ -30,9 +32,9 @@ function StatisticsPage() {
       : "0";
 
   const maxQueue =
-    Math.max(
-      ...stations.map((station) => station.queue)
-    );
+    stations.length > 0
+      ? Math.max(...stations.map((station: any) => station.queue || 0))
+      : 0;
 
   return (
     <div className="statistics-page">
@@ -104,7 +106,7 @@ function StatisticsPage() {
                 <div
                   className="bar-fill open-bar"
                   style={{
-                    width: `${(open / total) * 100}%`,
+                    width: `${total > 0 ? (open / total) * 100 : 0}%`,
                   }}
                 />
               </div>
@@ -123,7 +125,7 @@ function StatisticsPage() {
                 <div
                   className="bar-fill closed-bar"
                   style={{
-                    width: `${(closed / total) * 100}%`,
+                    width: `${total > 0 ? (closed / total) * 100 : 0}%`,
                   }}
                 />
               </div>
@@ -154,7 +156,7 @@ function StatisticsPage() {
                 <div
                   className="bar-fill fuel-bar"
                   style={{
-                    width: `${(fuel / total) * 100}%`,
+                    width: `${total > 0 ? (fuel / total) * 100 : 0}%`,
                   }}
                 />
               </div>
@@ -173,7 +175,7 @@ function StatisticsPage() {
                 <div
                   className="bar-fill no-fuel-bar"
                   style={{
-                    width: `${(noFuel / total) * 100}%`,
+                    width: `${total > 0 ? (noFuel / total) * 100 : 0}%`,
                   }}
                 />
               </div>
@@ -206,7 +208,7 @@ function StatisticsPage() {
             </div>
 
 
-            {stations.map((station) => (
+            {stations.map((station: any) => (
 
               <div
                 className="queue-row"
@@ -254,4 +256,3 @@ function StatisticsPage() {
 }
 
 export default StatisticsPage;
-

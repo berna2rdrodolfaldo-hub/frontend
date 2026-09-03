@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import type { FormEventHandler } from "react";
 import type { LoginCredentials } from "../../types/auth";
@@ -32,19 +31,8 @@ function LoginForm({ error, onSubmit }: LoginFormProps) {
     <div className="login-page">
       <div className="login-container">
         <form onSubmit={handleSubmit}>
-
           <h1>Iniciar Sesión</h1>
-               required 
-            <input
-                id="carnet"
-                name="carnet"
-                type="text"
-                value={carnet}
-                onChange={(event) => setCarnet(event.target.value)}
-                placeholder="Ingrese su carnet"
-                autoComplete="username"
-                required
-              />
+
           <div>
             <label htmlFor="carnet">
               Carnet de identidad
@@ -88,7 +76,6 @@ function LoginForm({ error, onSubmit }: LoginFormProps) {
           <button type="submit">
             Ingresar
           </button>
-
         </form>
       </div>
     </div>

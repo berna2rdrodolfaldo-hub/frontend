@@ -1,16 +1,18 @@
-
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import StationCard from "../components/StationCard";
-import { stations } from "../data/stations";
+import { stations as initialStations } from "../data/stations";
 import "./StationsPage.css";
 
 function StationsPage() {
-
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("todos");
 
-  const filteredStations = stations.filter((station) => {
+  // Cargar datos dinámicos actualizados desde localStorage
+  const savedStations = localStorage.getItem("sas_stations");
+  const stations = savedStations ? JSON.parse(savedStations) : initialStations;
+
+  const filteredStations = stations.filter((station: any) => {
 
     const matchesSearch =
       station.name
@@ -125,7 +127,7 @@ function StationsPage() {
 
           <div className="stations-grid">
 
-            {filteredStations.map((station) => (
+            {filteredStations.map((station: any) => (
 
               <StationCard
                 key={station.id}
@@ -164,4 +166,3 @@ function StationsPage() {
 }
 
 export default StationsPage;
-
