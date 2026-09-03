@@ -34,7 +34,17 @@ function LoginForm({ error, onSubmit }: LoginFormProps) {
         <form onSubmit={handleSubmit}>
 
           <h1>Iniciar Sesión</h1>
-
+               required 
+            <input
+                id="carnet"
+                name="carnet"
+                type="text"
+                value={carnet}
+                onChange={(event) => setCarnet(event.target.value)}
+                placeholder="Ingrese su carnet"
+                autoComplete="username"
+                required
+              />
           <div>
             <label htmlFor="carnet">
               Carnet de identidad

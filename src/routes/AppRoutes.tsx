@@ -10,6 +10,7 @@ import HomePage from "../pages/HomePage";
 import StationsPage from "../pages/StationsPage";
 import StatisticsPage from "../pages/StatisticsPage";
 import InformationPage from "../pages/InformationPage";
+import AdminPage from "../pages/auth/admin/AdminPage";
 
 function AppRoutes() {
 
@@ -48,6 +49,10 @@ function AppRoutes() {
           path="/estadisticas"
           element={<StatisticsPage />}
         />
+        <Route
+          path="/admin"
+          element={<AdminPage />}
+        />  
 
 
         {/* INFORMACIÓN */}

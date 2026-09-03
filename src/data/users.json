@@ -12,5 +12,12 @@
     "carnet": "123",
     "password": "user",
     "role": "USUARIO"
+  },
+  {
+    "id": "user-3",
+    "name": "Administrador",
+    "carnet": "12345678",
+    "password": "1234",
+    "role": "ADMIN"
   }
 ]
