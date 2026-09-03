@@ -1,0 +1,210 @@
+
+.station-card {
+  overflow: hidden;
+
+  background: white;
+
+  border: 1px solid #e7ece9;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 6px 22px rgba(0, 0, 0, 0.06);
+
+  transition: 0.25s;
+}
+
+.station-card:hover {
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.11);
+}
+
+.station-image-wrapper {
+  height: 185px;
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+.station-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+
+  transition: 0.4s;
+}
+
+.station-card:hover .station-image {
+  transform: scale(1.04);
+}
+
+.station-status {
+  position: absolute;
+
+  top: 13px;
+  right: 13px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 6px 10px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  font-size: 9px;
+
+  font-weight: 800;
+}
+
+.station-status span {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+}
+
+.station-status.open {
+  color: #08733f;
+}
+
+.station-status.open span {
+  background: #35a854;
+}
+
+.station-status.closed {
+  color: #c62828;
+}
+
+.station-status.closed span {
+  background: #d94a4a;
+}
+
+.station-content {
+  padding: 20px;
+}
+
+.station-content h3 {
+  margin: 0;
+
+  color: #024430;
+
+  font-size: 17px;
+}
+
+.station-location {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #858f8a;
+
+  font-size: 11px;
+}
+
+.prices {
+  margin: 18px 0;
+
+  padding: 13px 0;
+
+  border-top: 1px solid #edf0ee;
+
+  border-bottom: 1px solid #edf0ee;
+}
+
+.prices > div {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding: 5px 0;
+}
+
+.prices span {
+  color: #69766f;
+
+  font-size: 11px;
+}
+
+.prices strong {
+  color: #08733f;
+
+  font-size: 12px;
+}
+
+.station-details {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 10px;
+}
+
+.detail {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 10px;
+
+  border-radius: 10px;
+
+  background: #f5f8f6;
+}
+
+.detail > span {
+  font-size: 17px;
+}
+
+.detail small {
+  display: block;
+
+  color: #8a9690;
+
+  font-size: 9px;
+}
+
+.detail strong {
+  display: block;
+
+  margin-top: 2px;
+
+  font-size: 11px;
+}
+
+.queue-low,
+.fuel-available {
+  color: #08733f;
+}
+
+.queue-medium {
+  color: #d18b00;
+}
+
+.queue-high,
+.fuel-unavailable {
+  color: #c62828;
+}
+
+@media (max-width: 450px) {
+
+  .station-details {
+    grid-template-columns: 1fr;
+  }
+
+  .station-image-wrapper {
+    height: 200px;
+  }
+}
+

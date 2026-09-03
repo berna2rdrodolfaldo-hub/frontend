@@ -1,0 +1,182 @@
+
+.stations-page {
+  min-height: 100vh;
+
+  background: #f3f6f4;
+
+  font-family:
+    "Segoe UI",
+    Tahoma,
+    Geneva,
+    Verdana,
+    sans-serif;
+}
+
+.stations-content {
+  margin-left: 255px;
+
+  padding-bottom: 60px;
+}
+
+.page-header {
+  padding: 45px 5%;
+
+  background: linear-gradient(
+    135deg,
+    #024430,
+    #08733f
+  );
+
+  color: white;
+}
+
+.page-header span {
+  color: #b6a137;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+}
+
+.page-header h1 {
+  margin: 8px 0;
+
+  font-size: 32px;
+}
+
+.page-header p {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.stations-controls {
+  width: 90%;
+
+  margin: 30px auto;
+
+  display: flex;
+
+  gap: 15px;
+}
+
+.search-box {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 0 15px;
+
+  height: 50px;
+
+  background: white;
+
+  border: 1px solid #e0e7e3;
+
+  border-radius: 11px;
+}
+
+.search-box input {
+  width: 100%;
+
+  border: none;
+
+  outline: none;
+
+  font-family: inherit;
+
+  font-size: 14px;
+}
+
+.stations-controls select {
+  min-width: 200px;
+
+  border: 1px solid #e0e7e3;
+
+  border-radius: 11px;
+
+  background: white;
+
+  padding: 0 15px;
+
+  color: #355444;
+
+  font-weight: 600;
+}
+
+.stations-results {
+  width: 90%;
+
+  margin: auto;
+}
+
+.results-heading h2 {
+  color: #024430;
+
+  font-size: 20px;
+}
+
+.stations-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 22px;
+}
+
+.no-results {
+  padding: 60px 20px;
+
+  text-align: center;
+
+  background: white;
+
+  border-radius: 16px;
+}
+
+.no-results span {
+  font-size: 35px;
+}
+
+.no-results h3 {
+  color: #024430;
+}
+
+.no-results p {
+  color: #7b8781;
+}
+
+@media (max-width: 1100px) {
+
+  .stations-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 750px) {
+
+  .stations-content {
+    margin-left: 0;
+  }
+
+  .stations-controls {
+    width: 88%;
+
+    flex-direction: column;
+  }
+
+  .stations-results {
+    width: 88%;
+  }
+
+  .stations-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

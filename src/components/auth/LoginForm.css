@@ -1,0 +1,365 @@
+/* =====================================================
+   LOGIN
+   Estilo visual inspirado en el HomePage
+   ===================================================== */
+
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 40px 20px;
+  box-sizing: border-box;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(103, 192, 61, 0.20),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #67c03d 0%,
+      #176b43 45%,
+      #024430 100%
+    );
+
+  font-family:
+    "Segoe UI",
+    Tahoma,
+    Geneva,
+    Verdana,
+    sans-serif;
+}
+
+
+/* =====================================================
+   TARJETA DEL LOGIN
+   ===================================================== */
+
+.login-container {
+  width: 100%;
+  max-width: 430px;
+
+  padding: 42px;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  border: 1px solid rgba(255, 255, 255, 0.45);
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 25px 60px rgba(0, 45, 30, 0.35);
+
+  color: #123c2a;
+
+  position: relative;
+
+  overflow: hidden;
+
+  animation: loginAppear 0.5s ease;
+}
+
+
+/* Detalle verde superior */
+
+.login-container::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 6px;
+
+  background: linear-gradient(
+    90deg,
+    #67c03d,
+    #2d8a4f,
+    #024430
+  );
+}
+
+
+/* =====================================================
+   FORMULARIO
+   ===================================================== */
+
+.login-container form {
+  width: 100%;
+}
+
+
+/* =====================================================
+   TÍTULO
+   ===================================================== */
+
+.login-container h1 {
+  margin: 0 0 34px;
+
+  text-align: center;
+
+  font-size: 31px;
+
+  font-weight: 750;
+
+  letter-spacing: -0.5px;
+
+  color: #024430;
+}
+
+
+/* Pequeño detalle debajo del título */
+
+.login-container h1::after {
+  content: "";
+
+  display: block;
+
+  width: 55px;
+  height: 4px;
+
+  margin: 12px auto 0;
+
+  border-radius: 20px;
+
+  background: #67c03d;
+}
+
+
+/* =====================================================
+   ETIQUETAS
+   ===================================================== */
+
+.login-container label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #18543a;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.2px;
+}
+
+
+/* =====================================================
+   CAMPOS
+   ===================================================== */
+
+.login-container input {
+  width: 100%;
+
+  height: 50px;
+
+  padding: 0 15px;
+
+  margin-bottom: 22px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d6e2db;
+
+  border-radius: 12px;
+
+  background: #f6f9f7;
+
+  color: #163c2c;
+
+  font-family: inherit;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* Placeholder */
+
+.login-container input::placeholder {
+  color: #8a9b92;
+}
+
+
+/* Campo seleccionado */
+
+.login-container input:focus {
+  background: #ffffff;
+
+  border-color: #67c03d;
+
+  box-shadow:
+    0 0 0 4px rgba(103, 192, 61, 0.15);
+
+  transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   MENSAJE DE ERROR
+   ===================================================== */
+
+.login-container .error {
+  margin: -5px 0 20px;
+
+  padding: 12px 14px;
+
+  border-radius: 10px;
+
+  background: #fff1f1;
+
+  border: 1px solid #f1caca;
+
+  color: #b42323;
+
+  text-align: center;
+
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   BOTÓN INGRESAR
+   ===================================================== */
+
+.login-container button {
+  width: 100%;
+
+  height: 50px;
+
+  margin-top: 4px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #67c03d,
+    #2f8b4e
+  );
+
+  color: white;
+
+  font-family: inherit;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 18px rgba(45, 126, 67, 0.25);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+
+/* Hover */
+
+.login-container button:hover {
+  filter: brightness(1.06);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 24px rgba(45, 126, 67, 0.32);
+}
+
+
+/* Click */
+
+.login-container button:active {
+  transform: translateY(0);
+
+  box-shadow:
+    0 5px 12px rgba(45, 126, 67, 0.22);
+}
+
+
+/* =====================================================
+   ANIMACIÓN
+   ===================================================== */
+
+@keyframes loginAppear {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(15px)
+      scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .login-page {
+    padding: 25px 16px;
+  }
+
+  .login-container {
+    max-width: 430px;
+
+    padding: 34px 25px;
+
+    border-radius: 20px;
+  }
+
+  .login-container h1 {
+    font-size: 27px;
+
+    margin-bottom: 30px;
+  }
+}
+
+
+@media (max-width: 380px) {
+
+  .login-container {
+    padding: 30px 20px;
+  }
+
+  .login-container h1 {
+    font-size: 24px;
+  }
+
+ 
+}

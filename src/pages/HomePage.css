@@ -1,0 +1,374 @@
+
+.dashboard {
+  min-height: 100vh;
+
+  background: #f3f6f4;
+
+  color: #173b2b;
+
+  font-family:
+    "Segoe UI",
+    Tahoma,
+    Geneva,
+    Verdana,
+    sans-serif;
+}
+
+.dashboard-content {
+  min-height: 100vh;
+
+  margin-left: 255px;
+}
+
+.dashboard-header {
+  min-height: 190px;
+
+  padding: 45px 5%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: linear-gradient(
+    135deg,
+    #024430,
+    #08733f
+  );
+
+  color: white;
+}
+
+.header-label,
+.section-label {
+  color: #b6a137;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+}
+
+.dashboard-header h1 {
+  margin: 8px 0 0;
+
+  font-size: 32px;
+}
+
+.dashboard-header p {
+  margin: 8px 0 0;
+
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.header-status {
+  padding: 10px 15px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  font-size: 12px;
+}
+
+.online-dot {
+  display: inline-block;
+
+  width: 8px;
+  height: 8px;
+
+  margin-right: 7px;
+
+  border-radius: 50%;
+
+  background: #67c03d;
+}
+
+
+/* ESTADÍSTICAS */
+
+.statistics {
+  width: 90%;
+
+  margin: -35px auto 40px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 16px;
+
+  position: relative;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 20px;
+
+  background: white;
+
+  border-radius: 15px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.07);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background: #e4f4e7;
+
+  font-size: 20px;
+}
+
+.stat-card small {
+  display: block;
+
+  color: #7b8781;
+
+  font-size: 11px;
+}
+
+.stat-card strong {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #024430;
+
+  font-size: 26px;
+}
+
+
+/* GRID PRINCIPAL */
+
+.home-grid {
+  width: 90%;
+
+  margin: auto;
+
+  display: grid;
+
+  grid-template-columns: 1.5fr 1fr;
+
+  gap: 22px;
+}
+
+.summary-card,
+.quick-card {
+  padding: 28px;
+
+  background: white;
+
+  border-radius: 16px;
+
+  border: 1px solid #e7ece9;
+
+  box-shadow:
+    0 6px 22px rgba(0, 0, 0, 0.05);
+}
+
+.summary-card h2,
+.quick-card h2,
+.section-heading h2 {
+  margin: 7px 0 22px;
+
+  color: #024430;
+
+  font-size: 21px;
+}
+
+.summary-list {
+  display: grid;
+
+  gap: 10px;
+}
+
+.summary-list div {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding: 13px;
+
+  border-radius: 9px;
+
+  background: #f5f8f6;
+
+  font-size: 13px;
+}
+
+.summary-list strong {
+  color: #08733f;
+}
+
+
+/* ACCESO RÁPIDO */
+
+.quick-card button {
+  width: 100%;
+
+  margin-top: 10px;
+
+  padding: 12px;
+
+  border: 1px solid #e0e7e3;
+
+  border-radius: 10px;
+
+  background: #f5f8f6;
+
+  color: #024430;
+
+  text-align: left;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.quick-card button:hover {
+  background: #e5f2e8;
+
+  border-color: #67c03d;
+
+  transform: translateX(3px);
+}
+
+
+/* DESTACADOS */
+
+.featured-section {
+  width: 90%;
+
+  margin: 45px auto;
+}
+
+.section-heading {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: end;
+
+  margin-bottom: 20px;
+}
+
+.view-all {
+  border: none;
+
+  background: transparent;
+
+  color: #08733f;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.featured-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 20px;
+}
+
+
+/* FOOTER */
+
+.dashboard-footer {
+  padding: 25px 5%;
+
+  background: #012b1f;
+
+  color: white;
+}
+
+.dashboard-footer strong {
+  color: #b6a137;
+}
+
+.dashboard-footer span {
+  margin-left: 10px;
+
+  color: rgba(255, 255, 255, 0.55);
+
+  font-size: 11px;
+}
+
+
+@media (max-width: 1100px) {
+
+  .statistics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .featured-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+@media (max-width: 750px) {
+
+  .dashboard-content {
+    margin-left: 0;
+  }
+
+  .dashboard-header {
+    padding: 35px 7%;
+
+    display: block;
+  }
+
+  .header-status {
+    display: inline-block;
+
+    margin-top: 20px;
+  }
+
+  .statistics {
+    width: 88%;
+
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .home-grid {
+    width: 88%;
+
+    grid-template-columns: 1fr;
+  }
+
+  .featured-section {
+    width: 88%;
+  }
+
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 450px) {
+
+  .statistics {
+    grid-template-columns: 1fr;
+  }
+}
+
