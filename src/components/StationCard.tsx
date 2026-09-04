@@ -1,19 +1,33 @@
-
-import type { Station } from "../data/stations";
 import "./StationCard.css";
-
 interface StationCardProps {
-  station: Station;
+  station: any; // Mantenemos 'any' para evitar conflictos si faltan propiedades en localStorage
 }
 
 function StationCard({ station }: StationCardProps) {
 
+  // Obtener precios de forma segura independientemente de si vienen como objeto o propiedades sueltas
+  const getPrice = (val: any, fallback: string) => {
+    if (val === undefined || val === null) return fallback;
+    if (typeof val === "number") return `Bs ${val.toFixed(2)}`;
+    if (typeof val === "string" && val.includes("Bs")) return val;
+    return `Bs ${val}`;
+  };
+
+  const specialPrice = getPrice(station?.prices?.especial ?? station?.special, "Bs 6.74");
+  const premiumPrice = getPrice(station?.prices?.premium ?? station?.premium, "Bs 7.18");
+  const dieselPrice = getPrice(station?.prices?.diesel ?? station?.diesel, "Bs 6.96");
+
+  const queueCount = station?.queue ?? 0;
+
   const queueClass =
-    station.queue <= 5
+    queueCount <= 5
       ? "queue-low"
-      : station.queue <= 15
+      : queueCount <= 15
       ? "queue-medium"
       : "queue-high";
+
+  const fallbackImg =
+    "https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&w=600&q=80";
 
   return (
     <article className="station-card">
@@ -21,21 +35,21 @@ function StationCard({ station }: StationCardProps) {
       <div className="station-image-wrapper">
 
         <img
-          src={station.image}
-          alt={station.name}
+          src={station?.image || fallbackImg}
+          alt={station?.name || "Surtidor"}
           className="station-image"
         />
 
         <span
           className={
-            station.open
+            station?.open
               ? "station-status open"
               : "station-status closed"
           }
         >
           <span></span>
 
-          {station.open
+          {station?.open
             ? "ABIERTO"
             : "CERRADO"}
         </span>
@@ -45,10 +59,10 @@ function StationCard({ station }: StationCardProps) {
 
       <div className="station-content">
 
-        <h3>{station.name}</h3>
+        <h3>{station?.name || "Surtidor"}</h3>
 
         <span className="station-location">
-          📍 {station.location}
+          📍 {station?.location || "Ubicación no especificada"}
         </span>
 
 
@@ -57,21 +71,21 @@ function StationCard({ station }: StationCardProps) {
           <div>
             <span>Gasolina Especial</span>
             <strong>
-              Bs {station.special.toFixed(2)}
+              {specialPrice}
             </strong>
           </div>
 
           <div>
             <span>Gasolina Premium</span>
             <strong>
-              Bs {station.premium.toFixed(2)}
+              {premiumPrice}
             </strong>
           </div>
 
           <div>
             <span>Diésel</span>
             <strong>
-              Bs {station.diesel.toFixed(2)}
+              {dieselPrice}
             </strong>
           </div>
 
@@ -88,7 +102,7 @@ function StationCard({ station }: StationCardProps) {
               <small>Cola</small>
 
               <strong className={queueClass}>
-                {station.queue} autos
+                {queueCount} autos
               </strong>
             </div>
 
@@ -104,12 +118,12 @@ function StationCard({ station }: StationCardProps) {
 
               <strong
                 className={
-                  station.fuel
+                  station?.fuel
                     ? "fuel-available"
                     : "fuel-unavailable"
                 }
               >
-                {station.fuel
+                {station?.fuel
                   ? "Disponible"
                   : "No disponible"}
               </strong>
@@ -126,4 +140,3 @@ function StationCard({ station }: StationCardProps) {
 }
 
 export default StationCard;
-

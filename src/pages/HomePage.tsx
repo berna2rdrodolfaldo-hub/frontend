@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authRepository } from "../repositories/authRepository";
 import { stations as initialStations } from "../data/stations";
@@ -9,27 +10,54 @@ function HomePage() {
   const navigate = useNavigate();
   const user = authRepository.getCurrentUser();
 
-  // Cargar datos dinámicos desde localStorage
-  const savedStations = localStorage.getItem("sas_stations");
-  const stations = savedStations ? JSON.parse(savedStations) : initialStations;
+  // Estado reactivo cargado con seguridad desde localStorage
+  const [stations, setStations] = useState(() => {
+    try {
+      const saved = localStorage.getItem("sas_stations");
+      if (!saved) return initialStations;
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : initialStations;
+    } catch (e) {
+      return initialStations;
+    }
+  });
+
+  // Escuchar actualizaciones en vivo desde el Admin o entre pestañas
+  useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const saved = localStorage.getItem("sas_stations");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) setStations(parsed);
+        }
+      } catch (e) {
+        setStations(initialStations);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   // Verificar si el usuario actual es Administrador
   const currentUser = user as any;
   const isAdmin = currentUser?.role === "ADMIN" || currentUser?.role === "ADMINISTRADOR";
 
-  // Cálculos reactivos con base en las estaciones guardadas
-  const totalStations = stations.length;
+  // Cálculos reactivos seguros
+  const safeStations = Array.isArray(stations) ? stations : initialStations;
+  const totalStations = safeStations.length;
 
-  const openStations = stations.filter(
-    (station: any) => station.open
+  const openStations = safeStations.filter(
+    (station: any) => station?.open
   ).length;
 
-  const availableFuel = stations.filter(
-    (station: any) => station.fuel
+  const availableFuel = safeStations.filter(
+    (station: any) => station?.fuel
   ).length;
 
-  const totalQueue = stations.reduce(
-    (total: number, station: any) => total + (station.queue || 0),
+  const totalQueue = safeStations.reduce(
+    (total: number, station: any) => total + (station?.queue || 0),
     0
   );
 
@@ -75,7 +103,7 @@ function HomePage() {
             </span>
 
             <h1>
-              Bienvenido{user ? `, ${user.name}` : ""}
+              Bienvenido{user?.name ? `, ${user.name}` : ""}
             </h1>
 
             <p>
@@ -210,9 +238,9 @@ function HomePage() {
           </div>
 
           <div className="featured-grid">
-            {stations.slice(0, 3).map((station: any) => (
+            {safeStations.slice(0, 3).map((station: any) => (
               <StationCard
-                key={station.id}
+                key={station?.id || Math.random()}
                 station={station}
               />
             ))}

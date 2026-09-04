@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import StationCard from "../components/StationCard";
 import { stations as initialStations } from "../data/stations";
@@ -9,8 +9,23 @@ function StationsPage() {
   const [filter, setFilter] = useState("todos");
 
   // Cargar datos dinámicos actualizados desde localStorage
-  const savedStations = localStorage.getItem("sas_stations");
-  const stations = savedStations ? JSON.parse(savedStations) : initialStations;
+  const [stations, setStations] = useState(() => {
+    const saved = localStorage.getItem("sas_stations");
+    return saved ? JSON.parse(saved) : initialStations;
+  });
+
+  // Escuchar cambios guardados desde el Admin o en otras pestañas
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem("sas_stations");
+      if (saved) {
+        setStations(JSON.parse(saved));
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const filteredStations = stations.filter((station: any) => {
 
