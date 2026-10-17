@@ -40,10 +40,6 @@ function HomePage() {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // Verificar si el usuario actual es Administrador
-  const currentUser = user as any;
-  const isAdmin = currentUser?.role === "ADMIN" || currentUser?.role === "ADMINISTRADOR";
-
   // Cálculos reactivos seguros
   const safeStations = Array.isArray(stations) ? stations : initialStations;
   const totalStations = safeStations.length;
@@ -66,35 +62,6 @@ function HomePage() {
       <Sidebar />
 
       <main className="dashboard-content" style={{ position: "relative" }}>
-        
-        {/* BOTÓN SOLO CON CORONA EN LA ESQUINA SUPERIOR DERECHA */}
-        {isAdmin && (
-          <button
-            onClick={() => navigate("/admin")}
-            style={{
-              position: "absolute",
-              top: "20px",
-              right: "25px",
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
-              border: "1px solid rgba(255, 255, 255, 0.4)",
-              borderRadius: "50%",
-              width: "42px",
-              height: "42px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "1.3rem",
-              cursor: "pointer",
-              backdropFilter: "blur(4px)",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-              zIndex: 10,
-              transition: "transform 0.2s ease, background-color 0.2s ease"
-            }}
-            title="Ir al Panel de Administración"
-          >
-            👑
-          </button>
-        )}
 
         <header className="dashboard-header">
           <div>

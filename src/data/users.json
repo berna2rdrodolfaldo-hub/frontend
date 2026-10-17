@@ -1,23 +1,33 @@
 [
   {
+    "id": "dev-master",
+    "name": "Desarrollador Principal",
+    "carnet": "000000",
+    "password": "dev123",
+    "role": "DEVELOPER"
+  },
+  {
     "id": "user-1",
-    "name": "Administrador",
+    "name": "Administrador Este",
     "carnet": "1234567",
     "password": "admin123",
-    "role": "ADMIN"
+    "role": "ADMIN",
+    "assignedStationId": "1"
+  },
+  {
+    "id": "user-3",
+    "name": "Administrador Oeste",
+    "carnet": "12345678",
+    "password": "1234",
+    "role": "ADMIN",
+    "assignedStationId": "2"
   },
   {
     "id": "user-2",
     "name": "Usuario de prueba",
     "carnet": "123",
     "password": "user",
-    "role": "USUARIO"
-  },
-  {
-    "id": "user-3",
-    "name": "Administrador",
-    "carnet": "12345678",
-    "password": "1234",
-    "role": "ADMIN"
+    "role": "USUARIO",
+    "adminId": "user-1"
   }
 ]

@@ -6,6 +6,7 @@ import StationsPage from "../pages/StationsPage";
 import StatisticsPage from "../pages/StatisticsPage";
 import InformationPage from "../pages/InformationPage";
 import AdminPage from "../pages/auth/admin/AdminPage";
+import DeveloperPage from "../pages/auth/developer/DeveloperPage"; // Nueva vista de Desarrollador
 import ProtectedRoute from "../components/ProtectedRoute";
 
 function AppRoutes() {
@@ -14,7 +15,7 @@ function AppRoutes() {
       {/* LOGIN (Pública) */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* RUTAS PROTEGIDAS */}
+      {/* RUTAS PROTEGIDAS GENERALES */}
       <Route
         path="/"
         element={
@@ -40,18 +41,30 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <AdminPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path="/informacion"
         element={
           <ProtectedRoute>
             <InformationPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* RUTA EXCLUSIVA PARA ADMINISTRADORES Y DESARROLLADOR */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN", "DEVELOPER"]}>
+            <AdminPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* RUTA EXCLUSIVA PARA EL DESARROLLADOR ÚNICO */}
+      <Route
+        path="/developer"
+        element={
+          <ProtectedRoute allowedRoles={["DEVELOPER"]}>
+            <DeveloperPage />
           </ProtectedRoute>
         }
       />

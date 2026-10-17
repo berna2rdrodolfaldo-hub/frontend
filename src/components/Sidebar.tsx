@@ -42,6 +42,12 @@ function Sidebar() {
           <span>ℹ️</span>
           Información
         </NavLink>
+
+        {/* Botón con la corona reposicionado JUSTO DEBAJO de Información */}
+        <NavLink to="/admin" className="nav-item">
+          <span>👑</span>
+          Administrador
+        </NavLink>
       </nav>
 
       <div className="sidebar-bottom">

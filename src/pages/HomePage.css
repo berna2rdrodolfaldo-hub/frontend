@@ -1,374 +1,712 @@
 
+/* =========================================================
+   SAS | SISTEMA DE ADMINISTRACIÓN DE SURTIDORES
+   Tema: corporativo, institucional y profesional
+   ========================================================= */
+
+/* 01. FUNDAMENTOS */
+
 .dashboard {
+  --sas-green-950: #032d20;
+  --sas-green-900: #063d2b;
+  --sas-green-800: #07583a;
+  --sas-green-700: #08784b;
+  --sas-green-600: #15915c;
+
+  --sas-gold: #b49a48;
+  --sas-gold-soft: #f5f0df;
+
+  --sas-text: #20352a;
+  --sas-muted: #748178;
+  --sas-line: #e3eae5;
+  --sas-surface: #ffffff;
+  --sas-background: #f4f7f5;
+
   min-height: 100vh;
-
-  background: #f3f6f4;
-
-  color: #173b2b;
-
-  font-family:
-    "Segoe UI",
-    Tahoma,
-    Geneva,
-    Verdana,
-    sans-serif;
+  color: var(--sas-text);
+  background: var(--sas-background);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+.dashboard *,
+.dashboard *::before,
+.dashboard *::after {
+  box-sizing: border-box;
+}
+
+.dashboard button {
+  font: inherit;
+}
+
+.dashboard button:focus-visible {
+  outline: 3px solid rgba(21, 145, 92, 0.35);
+  outline-offset: 3px;
+}
+
+.dashboard button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+
+/* 02. ESTRUCTURA GENERAL */
 
 .dashboard-content {
   min-height: 100vh;
-
+  min-width: 0;
   margin-left: 255px;
+  padding-bottom: 0;
 }
 
-.dashboard-header {
-  min-height: 190px;
+.dashboard-header,
+.statistics,
+.home-grid,
+.featured-section,
+.dashboard-footer {
+  position: relative;
+}
 
-  padding: 45px 5%;
+
+/* 03. CABECERA INSTITUCIONAL */
+
+.dashboard-header {
+  min-height: 205px;
+  padding: 43px clamp(28px, 5%, 76px);
 
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 28px;
 
-  background: linear-gradient(
-    135deg,
-    #024430,
-    #08733f
-  );
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
 
-  color: white;
+  color: #fff;
+  background:
+    radial-gradient(
+      ellipse at 88% 15%,
+      rgba(180, 154, 72, 0.15),
+      transparent 34%
+    ),
+    linear-gradient(
+      120deg,
+      var(--sas-green-950) 0%,
+      var(--sas-green-900) 55%,
+      #0b6842 100%
+    );
+
+  border-bottom: 3px solid var(--sas-gold);
+}
+
+/* Detalle decorativo de baja intensidad */
+.dashboard-header::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 300px;
+  height: 300px;
+  right: -95px;
+  top: -185px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 24px rgba(255, 255, 255, 0.025),
+    0 0 0 50px rgba(255, 255, 255, 0.02);
+  pointer-events: none;
 }
 
 .header-label,
 .section-label {
-  color: #b6a137;
-
+  display: inline-block;
+  color: var(--sas-gold);
   font-size: 10px;
-
   font-weight: 800;
-
-  letter-spacing: 1.5px;
+  letter-spacing: 1.65px;
+  line-height: 1.5;
+  text-transform: uppercase;
 }
 
 .dashboard-header h1 {
-  margin: 8px 0 0;
+  margin: 9px 0 0;
+  max-width: 760px;
 
-  font-size: 32px;
+  color: #fff;
+  font-size: clamp(27px, 2.7vw, 35px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.9px;
+  overflow-wrap: anywhere;
 }
 
 .dashboard-header p {
-  margin: 8px 0 0;
+  max-width: 560px;
+  margin: 12px 0 0;
 
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+  line-height: 1.8;
 }
 
 .header-status {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+
   padding: 10px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 999px;
 
-  border-radius: 20px;
+  color: #f1f7f2;
+  background: rgba(255, 255, 255, 0.075);
 
-  background: rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
 
-  font-size: 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .online-dot {
   display: inline-block;
+  flex: 0 0 8px;
 
   width: 8px;
   height: 8px;
-
-  margin-right: 7px;
+  margin-right: 9px;
 
   border-radius: 50%;
-
-  background: #67c03d;
+  background: #72d49a;
+  box-shadow: 0 0 0 4px rgba(114, 212, 154, 0.12);
 }
 
 
-/* ESTADÍSTICAS */
+/* 04. TARJETAS DE INDICADORES */
 
 .statistics {
   width: 90%;
-
-  margin: -35px auto 40px;
+  margin: -28px auto 39px;
 
   display: grid;
-
-  grid-template-columns:
-    repeat(4, 1fr);
-
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 
-  position: relative;
+  z-index: 2;
 }
 
 .stat-card {
+  min-width: 0;
+  min-height: 104px;
+
   display: flex;
   align-items: center;
+  gap: 15px;
 
-  gap: 14px;
+  position: relative;
+  overflow: hidden;
 
-  padding: 20px;
+  padding: 21px 19px;
 
-  background: white;
-
-  border-radius: 15px;
+  background: var(--sas-surface);
+  border: 1px solid var(--sas-line);
+  border-radius: 13px;
 
   box-shadow:
-    0 8px 25px rgba(0, 0, 0, 0.07);
+    0 2px 5px rgba(16, 48, 30, 0.025),
+    0 8px 22px rgba(16, 48, 30, 0.035);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+/* Filete superior que aparece al interactuar */
+.stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--sas-green-700);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  border-color: #cbded1;
+  box-shadow: 0 11px 27px rgba(16, 48, 30, 0.075);
+}
+
+.stat-card:hover::before {
+  transform: scaleX(1);
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
+  flex: 0 0 47px;
+  width: 47px;
+  height: 47px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border-radius: 13px;
+  border: 1px solid #e1eee5;
+  border-radius: 12px;
 
-  background: #e4f4e7;
-
+  background: linear-gradient(145deg, #f0f8f2, #e4f2e8);
   font-size: 20px;
+}
+
+.stat-card > div {
+  min-width: 0;
 }
 
 .stat-card small {
   display: block;
-
-  color: #7b8781;
-
+  color: var(--sas-muted);
   font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .stat-card strong {
   display: block;
+  margin-top: 4px;
 
-  margin-top: 2px;
-
-  color: #024430;
-
-  font-size: 26px;
+  color: var(--sas-green-900);
+  font-size: clamp(23px, 2vw, 29px);
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
+  font-variant-numeric: tabular-nums;
 }
 
 
-/* GRID PRINCIPAL */
+/* 05. CONTENIDO PRINCIPAL */
 
 .home-grid {
   width: 90%;
-
-  margin: auto;
+  margin: 0 auto;
 
   display: grid;
-
-  grid-template-columns: 1.5fr 1fr;
-
-  gap: 22px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 21px;
 }
 
 .summary-card,
 .quick-card {
-  padding: 28px;
+  min-width: 0;
+  padding: clamp(21px, 2.3vw, 29px);
 
-  background: white;
-
-  border-radius: 16px;
-
-  border: 1px solid #e7ece9;
+  background: var(--sas-surface);
+  border: 1px solid var(--sas-line);
+  border-radius: 14px;
 
   box-shadow:
-    0 6px 22px rgba(0, 0, 0, 0.05);
+    0 2px 5px rgba(16, 48, 30, 0.02),
+    0 7px 23px rgba(16, 48, 30, 0.035);
 }
 
 .summary-card h2,
 .quick-card h2,
 .section-heading h2 {
-  margin: 7px 0 22px;
+  margin: 8px 0 22px;
 
-  color: #024430;
-
-  font-size: 21px;
+  color: var(--sas-green-900);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.4px;
 }
+
+.summary-card .section-label,
+.quick-card .section-label,
+.section-heading .section-label {
+  color: var(--sas-green-700);
+}
+
+
+/* 06. LISTA DE ESTADO */
 
 .summary-list {
   display: grid;
-
-  gap: 10px;
+  gap: 9px;
 }
 
 .summary-list div {
+  min-width: 0;
+  min-height: 45px;
+
   display: flex;
-
+  align-items: center;
   justify-content: space-between;
+  gap: 12px;
 
-  padding: 13px;
+  padding: 11px 13px;
 
+  background: #f8faf8;
+  border: 1px solid #edf1ee;
   border-radius: 9px;
 
-  background: #f5f8f6;
+  color: #526258;
+  font-size: 12px;
 
-  font-size: 13px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.summary-list div:hover {
+  background: #f0f7f2;
+  border-color: #dce9df;
+}
+
+.summary-list div > span {
+  min-width: 0;
 }
 
 .summary-list strong {
-  color: #08733f;
+  flex-shrink: 0;
+  color: var(--sas-green-700);
+  font-size: 14px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
 }
 
 
-/* ACCESO RÁPIDO */
+/* 07. ACCESOS RÁPIDOS */
 
 .quick-card button {
   width: 100%;
+  min-height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
 
   margin-top: 10px;
+  padding: 12px 14px;
 
-  padding: 12px;
+  border: 1px solid #e2e9e4;
+  border-radius: 9px;
 
-  border: 1px solid #e0e7e3;
-
-  border-radius: 10px;
-
-  background: #f5f8f6;
-
-  color: #024430;
+  color: var(--sas-green-900);
+  background: #f8faf8;
 
   text-align: left;
-
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 650;
 
   cursor: pointer;
 
-  transition: 0.2s;
+  transition:
+    background-color 170ms ease,
+    border-color 170ms ease,
+    color 170ms ease,
+    transform 170ms ease,
+    box-shadow 170ms ease;
 }
 
 .quick-card button:hover {
-  background: #e5f2e8;
-
-  border-color: #67c03d;
-
+  color: var(--sas-green-800);
+  background: #edf7ef;
+  border-color: #c7e0cf;
+  box-shadow: 0 3px 9px rgba(7, 88, 58, 0.045);
   transform: translateX(3px);
 }
 
+.quick-card button:active {
+  transform: translateX(1px);
+}
 
-/* DESTACADOS */
+
+/* 08. SURTIDORES DESTACADOS */
 
 .featured-section {
   width: 90%;
-
-  margin: 45px auto;
+  margin: 42px auto 45px;
 }
 
 .section-heading {
   display: flex;
-
   justify-content: space-between;
+  align-items: flex-end;
+  gap: 18px;
 
-  align-items: end;
+  margin-bottom: 19px;
+}
 
-  margin-bottom: 20px;
+.section-heading h2 {
+  margin: 7px 0 0;
 }
 
 .view-all {
-  border: none;
+  flex-shrink: 0;
 
+  padding: 8px 0 8px 12px;
+  border: 0;
+  border-radius: 5px;
+
+  color: var(--sas-green-700);
   background: transparent;
 
-  color: #08733f;
-
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 750;
 
   cursor: pointer;
+  transition: color 160ms ease;
 }
 
+.view-all:hover {
+  color: var(--sas-green-950);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+
+/* Cuadrícula de tarjetas de estaciones */
 .featured-grid {
   display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 19px;
+}
 
-  grid-template-columns:
-    repeat(3, 1fr);
-
-  gap: 20px;
+.featured-grid > * {
+  min-width: 0;
 }
 
 
-/* FOOTER */
+/* 09. PIE INSTITUCIONAL */
 
 .dashboard-footer {
-  padding: 25px 5%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 
-  background: #012b1f;
+  padding: 22px 5%;
 
-  color: white;
+  color: rgba(255, 255, 255, 0.75);
+  background: var(--sas-green-950);
+  border-top: 2px solid rgba(180, 154, 72, 0.8);
 }
 
 .dashboard-footer strong {
-  color: #b6a137;
+  color: #d8c47e;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
 }
 
 .dashboard-footer span {
-  margin-left: 10px;
-
-  color: rgba(255, 255, 255, 0.55);
-
+  margin-left: 5px;
+  color: rgba(255, 255, 255, 0.58);
   font-size: 11px;
+  letter-spacing: 0.15px;
 }
 
 
-@media (max-width: 1100px) {
+/* 10. PANTALLAS MEDIANAS */
 
+@media (max-width: 1250px) {
   .statistics {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    gap: 11px;
+    padding: 17px 14px;
+  }
+
+  .stat-icon {
+    flex-basis: 42px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .home-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   }
 
   .featured-grid {
-    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 1050px) {
+  .statistics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    padding: 19px;
+  }
+
+  .featured-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-grid {
+    gap: 16px;
   }
 }
 
 
-@media (max-width: 750px) {
+/* 11. TABLETAS Y MÓVILES */
 
+@media (max-width: 750px) {
   .dashboard-content {
     margin-left: 0;
   }
 
   .dashboard-header {
-    padding: 35px 7%;
+    min-height: auto;
+    padding: 32px 6% 43px;
 
-    display: block;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .dashboard-header h1 {
+    font-size: clamp(26px, 6vw, 33px);
+  }
+
+  .dashboard-header p {
+    font-size: 12px;
   }
 
   .header-status {
-    display: inline-block;
-
-    margin-top: 20px;
+    padding: 9px 13px;
   }
 
   .statistics {
     width: 88%;
+    margin: -22px auto 30px;
+    gap: 12px;
+  }
 
-    grid-template-columns: 1fr 1fr;
+  .stat-card {
+    min-height: 92px;
+    padding: 15px;
   }
 
   .home-grid {
     width: 88%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
 
-    grid-template-columns: 1fr;
+  .summary-card,
+  .quick-card {
+    padding: 22px;
   }
 
   .featured-section {
     width: 88%;
+    margin-top: 34px;
   }
 
   .featured-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-footer {
+    padding: 21px 6%;
   }
 }
 
 
-@media (max-width: 450px) {
+/* 12. TELÉFONOS PEQUEÑOS */
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 28px 6% 38px;
+  }
+
+  .header-label,
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 1.3px;
+  }
 
   .statistics {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .stat-card {
+    min-height: 82px;
+    padding: 14px 16px;
+  }
+
+  .stat-icon {
+    flex-basis: 43px;
+    width: 43px;
+    height: 43px;
+  }
+
+  .stat-card strong {
+    font-size: 25px;
+  }
+
+  .summary-card,
+  .quick-card {
+    padding: 19px;
+  }
+
+  .summary-card h2,
+  .quick-card h2,
+  .section-heading h2 {
+    font-size: 18px;
+  }
+
+  .featured-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .view-all {
+    padding-left: 0;
+  }
+
+  .dashboard-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .dashboard-footer span {
+    margin-left: 0;
+    line-height: 1.6;
   }
 }
 
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard *,
+  .dashboard *::before,
+  .dashboard *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
