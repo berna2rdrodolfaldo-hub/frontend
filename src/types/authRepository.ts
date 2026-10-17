@@ -23,6 +23,19 @@ export const authRepository = {
     return savedUsers;
   },
 
+  // Crear un nuevo usuario en la plataforma
+  createUser(newUserData: Omit<UserRecord, "id">): UserRecord {
+    const users = this.getAllUsers();
+    const newUser: UserRecord = {
+      ...newUserData,
+      id: String(Date.now()), // ID único basado en timestamp
+    };
+
+    const updatedUsers = [...users, newUser];
+    storageService.set<UserRecord[]>(USERS_KEY, updatedUsers);
+    return newUser;
+  },
+
   // Login reactivo
   login(credentials: LoginCredentials): User | null {
     const users = this.getAllUsers();

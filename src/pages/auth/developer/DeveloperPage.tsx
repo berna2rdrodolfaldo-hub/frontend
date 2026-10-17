@@ -8,6 +8,13 @@ function DeveloperPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [selectedStation, setSelectedStation] = useState<Record<string, string>>({});
 
+  // Estados para el formulario de nuevo usuario
+  const [name, setName] = useState("");
+  const [carnet, setCarnet] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<UserRole>("USUARIO");
+  const [stationId, setStationId] = useState(stations[0]?.id ? String(stations[0].id) : "1");
+
   useEffect(() => {
     loadUsers();
   }, []);
@@ -16,8 +23,33 @@ function DeveloperPage() {
     const repo = authRepository as any;
     if (typeof repo.getAllUsers === "function") {
       setUsers(repo.getAllUsers());
-    } else if (typeof repo.getUsers === "function") {
-      setUsers(repo.getUsers());
+    }
+  };
+
+  const handleCreateUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !carnet || !password) {
+      alert("Por favor completa todos los campos requeridos.");
+      return;
+    }
+
+    const repo = authRepository as any;
+    if (typeof repo.createUser === "function") {
+      repo.createUser({
+        name,
+        carnet,
+        password,
+        role,
+        assignedStationId: role === "ADMIN" ? stationId : undefined,
+      });
+
+      // Limpiar formulario y recargar
+      setName("");
+      setCarnet("");
+      setPassword("");
+      setRole("USUARIO");
+      loadUsers();
+      alert("¡Usuario creado exitosamente!");
     }
   };
 
@@ -27,8 +59,8 @@ function DeveloperPage() {
       repo.updateUserRole(userId, "USUARIO");
     } else {
       const defaultStationId = stations[0]?.id ? String(stations[0].id) : "1";
-      const stationId = selectedStation[userId] || defaultStationId;
-      repo.updateUserRole(userId, "ADMIN", stationId);
+      const stId = selectedStation[userId] || defaultStationId;
+      repo.updateUserRole(userId, "ADMIN", stId);
     }
     loadUsers();
   };
@@ -42,10 +74,99 @@ function DeveloperPage() {
           <div>
             <span className="header-label">MÓDULO EXCLUSIVO - DESARROLLADOR</span>
             <h1>Gestión Global de Usuarios y Rangos 👑</h1>
-            <p>Concede o revoca el rango de Administrador a cualquier usuario del sistema.</p>
+            <p>Crea nuevos usuarios o concede/revoca rangos de Administrador.</p>
           </div>
         </header>
 
+        {/* FORMULARIO PARA CREAR USUARIO */}
+        <section className="admin-profile-card" style={{ marginTop: "20px" }}>
+          <h2>➕ Crear Nuevo Usuario</h2>
+          <form onSubmit={handleCreateUser} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "15px", marginTop: "15px" }}>
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "5px", fontWeight: "bold" }}>Nombre Completo</label>
+              <input
+                type="text"
+                placeholder="Ej. Juan Pérez"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "5px", fontWeight: "bold" }}>Carnet (Usuario)</label>
+              <input
+                type="text"
+                placeholder="Ej. 123456"
+                value={carnet}
+                onChange={(e) => setCarnet(e.target.value)}
+                style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "5px", fontWeight: "bold" }}>Contraseña</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "5px", fontWeight: "bold" }}>Rol Inicial</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value as UserRole)}
+                style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+              >
+                <option value="USUARIO">USUARIO</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+
+            {role === "ADMIN" && (
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "5px", fontWeight: "bold" }}>Surtidor Asignado</label>
+                <select
+                  value={stationId}
+                  onChange={(e) => setStationId(e.target.value)}
+                  style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                >
+                  {stations.map((s: any) => (
+                    <option key={s.id} value={String(s.id)}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div style={{ gridColumn: "1 / -1" }}>
+              <button
+                type="submit"
+                style={{
+                  backgroundColor: "#10b981",
+                  color: "#fff",
+                  border: "none",
+                  padding: "10px 20px",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                🚀 Registrar Usuario
+              </button>
+            </div>
+          </form>
+        </section>
+
+        {/* TABLA DE USUARIOS */}
         <section className="admin-profile-card" style={{ marginTop: "20px" }}>
           <h2>Listado General de Usuarios</h2>
           <div style={{ overflowX: "auto", marginTop: "15px" }}>
