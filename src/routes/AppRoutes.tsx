@@ -6,7 +6,7 @@ import StationsPage from "../pages/StationsPage";
 import StatisticsPage from "../pages/StatisticsPage";
 import InformationPage from "../pages/InformationPage";
 import AdminPage from "../pages/auth/admin/AdminPage";
-import DeveloperPage from "../pages/auth/developer/DeveloperPage"; // Nueva vista de Desarrollador
+import DeveloperPage from "../pages/auth/developer/DeveloperPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 function AppRoutes() {
@@ -24,6 +24,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/surtidores"
         element={
@@ -32,6 +33,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/estadisticas"
         element={
@@ -40,6 +42,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/informacion"
         element={
@@ -49,7 +52,7 @@ function AppRoutes() {
         }
       />
 
-      {/* RUTA EXCLUSIVA PARA ADMINISTRADORES Y DESARROLLADOR */}
+      {/* RUTA ADMINISTRADOR */}
       <Route
         path="/admin"
         element={
@@ -59,7 +62,7 @@ function AppRoutes() {
         }
       />
 
-      {/* RUTA EXCLUSIVA PARA EL DESARROLLADOR ÚNICO */}
+      {/* RUTA EXCLUSIVA DESARROLLADOR */}
       <Route
         path="/developer"
         element={
@@ -69,8 +72,8 @@ function AppRoutes() {
         }
       />
 
-      {/* Redirección por defecto */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* REDIRECCIÓN POR DEFECTO */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

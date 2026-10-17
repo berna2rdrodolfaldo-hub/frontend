@@ -13,17 +13,22 @@ function DeveloperPage() {
   }, []);
 
   const loadUsers = () => {
-    const all = authRepository.getAllUsers();
-    setUsers(all);
+    const repo = authRepository as any;
+    if (typeof repo.getAllUsers === "function") {
+      setUsers(repo.getAllUsers());
+    } else if (typeof repo.getUsers === "function") {
+      setUsers(repo.getUsers());
+    }
   };
 
   const handleRoleChange = (userId: string, currentRole: UserRole) => {
+    const repo = authRepository as any;
     if (currentRole === "ADMIN") {
-      authRepository.updateUserRole(userId, "USUARIO");
+      repo.updateUserRole(userId, "USUARIO");
     } else {
       const defaultStationId = stations[0]?.id ? String(stations[0].id) : "1";
       const stationId = selectedStation[userId] || defaultStationId;
-      authRepository.updateUserRole(userId, "ADMIN", stationId);
+      repo.updateUserRole(userId, "ADMIN", stationId);
     }
     loadUsers();
   };
