@@ -29,5 +29,29 @@
     "password": "user",
     "role": "USUARIO",
     "adminId": "user-1"
+  },
+  {
+    "name": "pepe",
+    "carnet": "001",
+    "password": "123",
+    "role": "ADMIN",
+    "assignedStationId": "4",
+    "id": "1792268670802"
+  },
+  {
+    "name": "romero",
+    "carnet": "0001",
+    "password": "roma",
+    "role": "ADMIN",
+    "assignedStationId": "6",
+    "id": "1792270259034"
+  },
+  {
+    "name": "ernesto",
+    "carnet": "002",
+    "password": "123",
+    "role": "ADMIN",
+    "assignedStationId": "3",
+    "id": "1792270539239"
   }
 ]

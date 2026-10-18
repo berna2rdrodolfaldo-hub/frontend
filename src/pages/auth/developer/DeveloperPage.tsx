@@ -8,7 +8,6 @@ function DeveloperPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [selectedStation, setSelectedStation] = useState<Record<string, string>>({});
 
-  // Estados para el formulario de nuevo usuario
   const [name, setName] = useState("");
   const [carnet, setCarnet] = useState("");
   const [password, setPassword] = useState("");
@@ -19,57 +18,94 @@ function DeveloperPage() {
     loadUsers();
   }, []);
 
-  const loadUsers = () => {
-    const repo = authRepository as any;
-    if (typeof repo.getAllUsers === "function") {
+  const loadUsers = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/api/users");
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data);
+        localStorage.setItem("sas_users", JSON.stringify(data));
+      } else {
+        const repo = authRepository as any;
+        setUsers(repo.getAllUsers());
+      }
+    } catch {
+      const repo = authRepository as any;
       setUsers(repo.getAllUsers());
     }
   };
 
-  const handleCreateUser = (e: React.FormEvent) => {
+  const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !carnet || !password) {
       alert("Por favor completa todos los campos requeridos.");
       return;
     }
 
-    const repo = authRepository as any;
-    if (typeof repo.createUser === "function") {
-      repo.createUser({
-        name,
-        carnet,
-        password,
-        role,
-        assignedStationId: role === "ADMIN" ? stationId : undefined,
+    try {
+      const response = await fetch("http://localhost:3001/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          carnet,
+          password,
+          role,
+          assignedStationId: role === "ADMIN" ? stationId : undefined,
+        }),
       });
 
-      // Limpiar formulario y recargar
+      if (!response.ok) throw new Error("Error en el servidor");
+
+      const createdUser = await response.json();
+      const repo = authRepository as any;
+      if (typeof repo.createUser === "function") {
+        repo.createUser(createdUser);
+      }
+
+      setUsers((prev) => [...prev, createdUser]);
+
       setName("");
       setCarnet("");
       setPassword("");
       setRole("USUARIO");
-      loadUsers();
-      alert("¡Usuario creado exitosamente!");
+      alert("¡Usuario guardado exitosamente!");
+    } catch {
+      alert("Asegúrate de ejecutar: node server.js");
     }
   };
 
   const handleRoleChange = (userId: string, currentRole: UserRole) => {
+    const newRole: UserRole = currentRole === "ADMIN" ? "USUARIO" : "ADMIN";
+    const defaultStationId = stations[0]?.id ? String(stations[0].id) : "1";
+    const assignedStId = newRole === "ADMIN" ? (selectedStation[userId] || defaultStationId) : undefined;
+
     const repo = authRepository as any;
-    if (currentRole === "ADMIN") {
-      repo.updateUserRole(userId, "USUARIO");
-    } else {
-      const defaultStationId = stations[0]?.id ? String(stations[0].id) : "1";
-      const stId = selectedStation[userId] || defaultStationId;
-      repo.updateUserRole(userId, "ADMIN", stId);
+    if (typeof repo.updateUserRole === "function") {
+      repo.updateUserRole(userId, newRole, assignedStId);
     }
-    loadUsers();
+
+    setUsers((prevUsers) =>
+      prevUsers.map((u) =>
+        u.id === userId
+          ? { ...u, role: newRole, assignedStationId: assignedStId }
+          : u
+      )
+    );
+  };
+
+  const getStationName = (id?: string) => {
+    if (!id) return "-";
+    const station = stations.find((s: any) => String(s.id) === String(id));
+    return station ? station.name : `Surtidor ${id}`;
   };
 
   return (
-    <div className="dashboard">
+    <div className="dashboard" style={{ display: "flex" }}>
       <Sidebar />
 
-      <main className="dashboard-content">
+      {/* MARGIN LEFT PARA DESPLAZAR EL CONTENIDO Y NO TAPARLO CON EL SIDEBAR */}
+      <main className="dashboard-content" style={{ marginLeft: "260px", padding: "20px", flex: 1, minWidth: 0 }}>
         <header className="dashboard-header">
           <div>
             <span className="header-label">MÓDULO EXCLUSIVO - DESARROLLADOR</span>
@@ -225,7 +261,7 @@ function DeveloperPage() {
                           ))}
                         </select>
                       ) : (
-                        u.assignedStationId || "-"
+                        getStationName(u.assignedStationId)
                       )}
                     </td>
                     <td style={{ padding: "10px" }}>

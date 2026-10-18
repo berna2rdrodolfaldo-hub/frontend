@@ -1,28 +1,33 @@
-import type { ReactNode } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
 import { authRepository } from "../repositories/authRepository";
-import type { UserRole } from "../types/auth";
 
 interface ProtectedRouteProps {
-  children: ReactNode;
-  allowedRoles?: UserRole[];
+  children: React.ReactNode;
+  allowedRoles?: string[];
 }
 
-function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
-  // 1. Si NO está autenticado, redirigir inmediatamente al login
-  if (!authRepository.isAuthenticated()) {
+export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  const user: any = authRepository.getCurrentUser();
+
+  // 1. Si no hay usuario autenticado, redirige al Login
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  const currentUser = authRepository.getCurrentUser();
+  // 2. Verificación de roles
+  if (allowedRoles && allowedRoles.length > 0) {
+    const rawRole = user.role || user.rol || "";
+    const userRole = String(rawRole).toUpperCase().trim();
 
-  // 2. Si se especifican roles permitidos y el usuario actual no los tiene, redirigir al inicio
-  if (allowedRoles && currentUser && !allowedRoles.includes(currentUser.role)) {
-    return <Navigate to="/" replace />;
+    const hasPermission = allowedRoles.some(
+      (role) => role.toUpperCase().trim() === userRole
+    );
+
+    if (!hasPermission) {
+      return <Navigate to="/" replace />;
+    }
   }
 
-  // 3. Si todo está en orden, permitir ver la página
   return <>{children}</>;
 }
-
-export default ProtectedRoute;

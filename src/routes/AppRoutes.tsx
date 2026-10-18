@@ -12,7 +12,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 function AppRoutes() {
   return (
     <Routes>
-      {/* LOGIN (Pública) */}
+      {/* LOGIN */}
       <Route path="/login" element={<LoginPage />} />
 
       {/* RUTAS PROTEGIDAS GENERALES */}

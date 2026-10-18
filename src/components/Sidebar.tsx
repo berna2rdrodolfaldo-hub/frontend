@@ -4,13 +4,21 @@ import "./Sidebar.css";
 
 function Sidebar() {
   const navigate = useNavigate();
-  const user = authRepository.getCurrentUser();
+  const user = authRepository.getCurrentUser() as any;
 
   // Función para borrar la sesión y redirigir
   const handleLogout = () => {
     authRepository.logout();
     navigate("/login", { replace: true });
   };
+
+  // Normalizamos el rol a mayúsculas
+  const rawRole = user?.role || user?.rol || "";
+  const role = String(rawRole).toUpperCase().trim();
+
+  // Verificación para habilitar el enlace al Panel Admin
+  const isDev = role === "DEVELOPER" || role === "DEV";
+  const isAdmin = role === "ADMIN" || isDev;
 
   return (
     <aside className="sidebar">
@@ -38,15 +46,17 @@ function Sidebar() {
           Estadísticas
         </NavLink>
 
+        {/* Único acceso de administración en la barra lateral */}
+        {isAdmin && (
+          <NavLink to="/admin" className="nav-item nav-admin">
+            <span>⚙️</span>
+            Panel Admin
+          </NavLink>
+        )}
+
         <NavLink to="/informacion" className="nav-item">
           <span>ℹ️</span>
           Información
-        </NavLink>
-
-        {/* Botón con la corona reposicionado JUSTO DEBAJO de Información */}
-        <NavLink to="/admin" className="nav-item">
-          <span>👑</span>
-          Administrador
         </NavLink>
       </nav>
 
@@ -58,12 +68,11 @@ function Sidebar() {
             </div>
             <div className="user-info">
               <strong>{user.name}</strong>
-              <span>{user.role}</span>
+              <span>{user.role || user.rol}</span>
             </div>
           </div>
         )}
 
-        {/* AQUÍ ESTÁ EL BOTÓN DE CERRAR SESIÓN */}
         <button
           className="sidebar-logout"
           onClick={handleLogout}

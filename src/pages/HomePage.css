@@ -7,9 +7,9 @@
 /* 01. FUNDAMENTOS */
 
 .dashboard {
-  --sas-green-950: #032d20;
+  --sas-green-950: #377964;
   --sas-green-900: #063d2b;
-  --sas-green-800: #07583a;
+  --sas-green-800: #5b7e71;
   --sas-green-700: #08784b;
   --sas-green-600: #15915c;
 
@@ -97,7 +97,7 @@
       120deg,
       var(--sas-green-950) 0%,
       var(--sas-green-900) 55%,
-      #0b6842 100%
+      #567266 100%
     );
 
   border-bottom: 3px solid var(--sas-gold);
