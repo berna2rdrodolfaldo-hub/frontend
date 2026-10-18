@@ -12,51 +12,20 @@ import ProtectedRoute from "../components/ProtectedRoute";
 function AppRoutes() {
   return (
     <Routes>
+      {/* RUTAS PÚBLICAS (Navegación libre sin login) */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/surtidores" element={<StationsPage />} />
+      <Route path="/estadisticas" element={<StatisticsPage />} />
+      <Route path="/informacion" element={<InformationPage />} />
+      
       {/* LOGIN */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* RUTAS PROTEGIDAS GENERALES */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/surtidores"
-        element={
-          <ProtectedRoute>
-            <StationsPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/estadisticas"
-        element={
-          <ProtectedRoute>
-            <StatisticsPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/informacion"
-        element={
-          <ProtectedRoute>
-            <InformationPage />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* RUTA ADMINISTRADOR */}
+      {/* RUTA ADMINISTRACIÓN DE SURTIDOR (Solo para Dueños, Trabajadores o Devs) */}
       <Route
         path="/admin"
         element={
-          <ProtectedRoute allowedRoles={["ADMIN", "DEVELOPER"]}>
+          <ProtectedRoute allowedRoles={["DUENO", "TRABAJADOR", "DEVELOPER"]}>
             <AdminPage />
           </ProtectedRoute>
         }
@@ -71,6 +40,15 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      {/* RUTA ADMINISTRACIÓN DE SURTIDOR */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={["DUENO", "ADMIN", "TRABAJADOR", "DEVELOPER"]}>
+              <AdminPage />
+            </ProtectedRoute>
+     }
+          />
 
       {/* REDIRECCIÓN POR DEFECTO */}
       <Route path="*" element={<Navigate to="/" replace />} />

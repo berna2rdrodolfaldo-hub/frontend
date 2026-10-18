@@ -20,11 +20,16 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     const rawRole = user.role || user.rol || "";
     const userRole = String(rawRole).toUpperCase().trim();
 
-    const hasPermission = allowedRoles.some(
-      (role) => role.toUpperCase().trim() === userRole
-    );
+    // Normalizar equivalencias de roles (ADMIN -> DUENO)
+    const normalizedAllowedRoles = allowedRoles.map((r) => r.toUpperCase().trim());
 
-    if (!hasPermission) {
+    // Si el usuario es ADMIN, le damos acceso si la ruta permite DUENO o ADMIN
+    const isAllowed =
+      normalizedAllowedRoles.includes(userRole) ||
+      (userRole === "ADMIN" && normalizedAllowedRoles.includes("DUENO")) ||
+      (userRole === "DUENO" && normalizedAllowedRoles.includes("ADMIN"));
+
+    if (!isAllowed) {
       return <Navigate to="/" replace />;
     }
   }
