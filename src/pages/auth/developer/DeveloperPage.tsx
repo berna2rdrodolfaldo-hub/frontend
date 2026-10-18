@@ -27,11 +27,15 @@ function DeveloperPage() {
         localStorage.setItem("sas_users", JSON.stringify(data));
       } else {
         const repo = authRepository as any;
-        setUsers(repo.getAllUsers());
+        if (typeof repo.getAllUsers === "function") {
+          setUsers(repo.getAllUsers());
+        }
       }
     } catch {
       const repo = authRepository as any;
-      setUsers(repo.getAllUsers());
+      if (typeof repo.getAllUsers === "function") {
+        setUsers(repo.getAllUsers());
+      }
     }
   };
 
@@ -43,6 +47,7 @@ function DeveloperPage() {
     }
 
     try {
+      const isOwnerRole = role === "DUENO" || (role as string) === "ADMIN";
       const response = await fetch("http://localhost:3001/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -51,7 +56,7 @@ function DeveloperPage() {
           carnet,
           password,
           role,
-          assignedStationId: role === "ADMIN" ? stationId : undefined,
+          assignedStationId: isOwnerRole ? stationId : undefined,
         }),
       });
 
@@ -71,14 +76,15 @@ function DeveloperPage() {
       setRole("USUARIO");
       alert("¡Usuario guardado exitosamente!");
     } catch {
-      alert("Asegúrate de ejecutar: node server.js");
+      alert("Asegúrate de ejecutar: node server.js (o se guardará en memoria local)");
     }
   };
 
   const handleRoleChange = (userId: string, currentRole: UserRole) => {
-    const newRole: UserRole = currentRole === "ADMIN" ? "USUARIO" : "ADMIN";
+    const isOwnerCurrently = currentRole === "DUENO" || (currentRole as string) === "ADMIN";
+    const newRole: UserRole = isOwnerCurrently ? "USUARIO" : "DUENO";
     const defaultStationId = stations[0]?.id ? String(stations[0].id) : "1";
-    const assignedStId = newRole === "ADMIN" ? (selectedStation[userId] || defaultStationId) : undefined;
+    const assignedStId = newRole === "DUENO" ? (selectedStation[userId] || defaultStationId) : undefined;
 
     const repo = authRepository as any;
     if (typeof repo.updateUserRole === "function") {
@@ -104,13 +110,12 @@ function DeveloperPage() {
     <div className="dashboard" style={{ display: "flex" }}>
       <Sidebar />
 
-      {/* MARGIN LEFT PARA DESPLAZAR EL CONTENIDO Y NO TAPARLO CON EL SIDEBAR */}
       <main className="dashboard-content" style={{ marginLeft: "260px", padding: "20px", flex: 1, minWidth: 0 }}>
         <header className="dashboard-header">
           <div>
             <span className="header-label">MÓDULO EXCLUSIVO - DESARROLLADOR</span>
             <h1>Gestión Global de Usuarios y Rangos 👑</h1>
-            <p>Crea nuevos usuarios o concede/revoca rangos de Administrador.</p>
+            <p>Crea nuevos usuarios o concede/revoca rangos de Dueño/Administrador.</p>
           </div>
         </header>
 
@@ -162,11 +167,12 @@ function DeveloperPage() {
                 style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
               >
                 <option value="USUARIO">USUARIO</option>
-                <option value="ADMIN">ADMIN</option>
+                <option value="TRABAJADOR">TRABAJADOR</option>
+                <option value="DUENO">DUEÑO DE SURTIDOR</option>
               </select>
             </div>
 
-            {role === "ADMIN" && (
+            {(role === "DUENO" || (role as string) === "ADMIN") && (
               <div>
                 <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "5px", fontWeight: "bold" }}>Surtidor Asignado</label>
                 <select
@@ -217,92 +223,95 @@ function DeveloperPage() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((u) => (
-                  <tr key={u.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                    <td style={{ padding: "10px", fontWeight: "bold" }}>{u.name}</td>
-                    <td style={{ padding: "10px" }}>{u.carnet}</td>
-                    <td style={{ padding: "10px" }}>
-                      <span
-                        style={{
-                          padding: "4px 8px",
-                          borderRadius: "12px",
-                          fontSize: "0.85rem",
-                          fontWeight: "bold",
-                          backgroundColor:
-                            u.role === "DEVELOPER"
-                              ? "#fef08a"
-                              : u.role === "ADMIN"
-                              ? "#d1fae5"
-                              : "#e5e7eb",
-                          color:
-                            u.role === "DEVELOPER"
-                              ? "#854d0e"
-                              : u.role === "ADMIN"
-                              ? "#065f46"
-                              : "#374151",
-                        }}
-                      >
-                        {u.role}
-                      </span>
-                    </td>
-                    <td style={{ padding: "10px" }}>
-                      {u.role === "USUARIO" ? (
-                        <select
-                          value={selectedStation[u.id] || (stations[0]?.id ? String(stations[0].id) : "1")}
-                          onChange={(e) =>
-                            setSelectedStation({ ...selectedStation, [u.id]: e.target.value })
-                          }
-                          style={{ padding: "5px", borderRadius: "6px" }}
+                {users.map((u) => {
+                  const isOwner = u.role === "DUENO" || (u.role as string) === "ADMIN";
+                  return (
+                    <tr key={u.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                      <td style={{ padding: "10px", fontWeight: "bold" }}>{u.name}</td>
+                      <td style={{ padding: "10px" }}>{u.carnet}</td>
+                      <td style={{ padding: "10px" }}>
+                        <span
+                          style={{
+                            padding: "4px 8px",
+                            borderRadius: "12px",
+                            fontSize: "0.85rem",
+                            fontWeight: "bold",
+                            backgroundColor:
+                              u.role === "DEVELOPER"
+                                ? "#fef08a"
+                                : isOwner
+                                ? "#d1fae5"
+                                : "#e5e7eb",
+                            color:
+                              u.role === "DEVELOPER"
+                                ? "#854d0e"
+                                : isOwner
+                                ? "#065f46"
+                                : "#374151",
+                          }}
                         >
-                          {stations.map((s: any) => (
-                            <option key={s.id} value={String(s.id)}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        getStationName(u.assignedStationId)
-                      )}
-                    </td>
-                    <td style={{ padding: "10px" }}>
-                      {u.role === "DEVELOPER" ? (
-                        <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>
-                          (Desarrollador Único)
+                          {u.role}
                         </span>
-                      ) : u.role === "ADMIN" ? (
-                        <button
-                          onClick={() => handleRoleChange(u.id, u.role)}
-                          style={{
-                            backgroundColor: "#ef4444",
-                            color: "#fff",
-                            border: "none",
-                            padding: "6px 12px",
-                            borderRadius: "6px",
-                            cursor: "pointer",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          🔻 Revocar Rango (Hacer Usuario)
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleRoleChange(u.id, u.role)}
-                          style={{
-                            backgroundColor: "#10b981",
-                            color: "#fff",
-                            border: "none",
-                            padding: "6px 12px",
-                            borderRadius: "6px",
-                            cursor: "pointer",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          👑 Otorgar Rango (Hacer Admin)
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td style={{ padding: "10px" }}>
+                        {!isOwner ? (
+                          <select
+                            value={selectedStation[u.id] || (stations[0]?.id ? String(stations[0].id) : "1")}
+                            onChange={(e) =>
+                              setSelectedStation({ ...selectedStation, [u.id]: e.target.value })
+                            }
+                            style={{ padding: "5px", borderRadius: "6px" }}
+                          >
+                            {stations.map((s: any) => (
+                              <option key={s.id} value={String(s.id)}>
+                                {s.name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          getStationName(u.assignedStationId)
+                        )}
+                      </td>
+                      <td style={{ padding: "10px" }}>
+                        {u.role === "DEVELOPER" ? (
+                          <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>
+                            (Desarrollador Único)
+                          </span>
+                        ) : isOwner ? (
+                          <button
+                            onClick={() => handleRoleChange(u.id, u.role)}
+                            style={{
+                              backgroundColor: "#ef4444",
+                              color: "#fff",
+                              border: "none",
+                              padding: "6px 12px",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            🔻 Revocar Rango (Hacer Usuario)
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleRoleChange(u.id, u.role)}
+                            style={{
+                              backgroundColor: "#10b981",
+                              color: "#fff",
+                              border: "none",
+                              padding: "6px 12px",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            👑 Otorgar Rango (Hacer Dueño)
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

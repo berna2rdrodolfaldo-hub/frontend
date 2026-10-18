@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import "./StationCard.css";
+
 interface StationCardProps {
   station: any; // Mantenemos 'any' para evitar conflictos si faltan propiedades en localStorage
 }
@@ -13,9 +15,9 @@ function StationCard({ station }: StationCardProps) {
     return `Bs ${val}`;
   };
 
-  const specialPrice = getPrice(station?.prices?.especial ?? station?.special, "Bs 6.74");
-  const premiumPrice = getPrice(station?.prices?.premium ?? station?.premium, "Bs 7.18");
-  const dieselPrice = getPrice(station?.prices?.diesel ?? station?.diesel, "Bs 6.96");
+  const specialPrice = getPrice(station?.prices?.especial ?? station?.special, "Bs 3.74");
+  const premiumPrice = getPrice(station?.prices?.premium ?? station?.premium, "Bs 4.79");
+  const dieselPrice = getPrice(station?.prices?.diesel ?? station?.diesel, "Bs 3.72");
 
   const queueCount = station?.queue ?? 0;
 
@@ -30,112 +32,117 @@ function StationCard({ station }: StationCardProps) {
     "https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&w=600&q=80";
 
   return (
-    <article className="station-card">
+    <Link 
+      to={`/surtidores/${station?.id}`} 
+      style={{ textDecoration: "none", color: "inherit", display: "block" }}
+    >
+      <article className="station-card" style={{ cursor: "pointer" }}>
 
-      <div className="station-image-wrapper">
+        <div className="station-image-wrapper">
 
-        <img
-          src={station?.image || fallbackImg}
-          alt={station?.name || "Surtidor"}
-          className="station-image"
-        />
+          <img
+            src={station?.image || fallbackImg}
+            alt={station?.name || "Surtidor"}
+            className="station-image"
+          />
 
-        <span
-          className={
-            station?.open
-              ? "station-status open"
-              : "station-status closed"
-          }
-        >
-          <span></span>
+          <span
+            className={
+              station?.open
+                ? "station-status open"
+                : "station-status closed"
+            }
+          >
+            <span></span>
 
-          {station?.open
-            ? "ABIERTO"
-            : "CERRADO"}
-        </span>
-
-      </div>
-
-
-      <div className="station-content">
-
-        <h3>{station?.name || "Surtidor"}</h3>
-
-        <span className="station-location">
-          📍 {station?.location || "Ubicación no especificada"}
-        </span>
-
-
-        <div className="prices">
-
-          <div>
-            <span>Gasolina Especial</span>
-            <strong>
-              {specialPrice}
-            </strong>
-          </div>
-
-          <div>
-            <span>Gasolina Premium</span>
-            <strong>
-              {premiumPrice}
-            </strong>
-          </div>
-
-          <div>
-            <span>Diésel</span>
-            <strong>
-              {dieselPrice}
-            </strong>
-          </div>
+            {station?.open
+              ? "ABIERTO"
+              : "CERRADO"}
+          </span>
 
         </div>
 
 
-        <div className="station-details">
+        <div className="station-content">
 
-          <div className="detail">
+          <h3>{station?.name || "Surtidor"}</h3>
 
-            <span>🚗</span>
+          <span className="station-location">
+            📍 {station?.location || "Ubicación no especificada"}
+          </span>
+
+
+          <div className="prices">
 
             <div>
-              <small>Cola</small>
+              <span>Gasolina Especial</span>
+              <strong>
+                {specialPrice}
+              </strong>
+            </div>
 
-              <strong className={queueClass}>
-                {queueCount} autos
+            <div>
+              <span>Gasolina Premium</span>
+              <strong>
+                {premiumPrice}
+              </strong>
+            </div>
+
+            <div>
+              <span>Diésel</span>
+              <strong>
+                {dieselPrice}
               </strong>
             </div>
 
           </div>
 
 
-          <div className="detail">
+          <div className="station-details">
 
-            <span>⛽</span>
+            <div className="detail">
 
-            <div>
-              <small>Combustible</small>
+              <span>🚗</span>
 
-              <strong
-                className={
-                  station?.fuel
-                    ? "fuel-available"
-                    : "fuel-unavailable"
-                }
-              >
-                {station?.fuel
-                  ? "Disponible"
-                  : "No disponible"}
-              </strong>
+              <div>
+                <small>Cola</small>
+
+                <strong className={queueClass}>
+                  {queueCount} autos
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div className="detail">
+
+              <span>⛽</span>
+
+              <div>
+                <small>Combustible</small>
+
+                <strong
+                  className={
+                    station?.fuel
+                      ? "fuel-available"
+                      : "fuel-unavailable"
+                  }
+                >
+                  {station?.fuel
+                    ? "Disponible"
+                    : "No disponible"}
+                </strong>
+              </div>
+
             </div>
 
           </div>
 
         </div>
 
-      </div>
-
-    </article>
+      </article>
+    </Link>
   );
 }
 
