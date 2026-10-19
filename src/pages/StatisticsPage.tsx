@@ -1,4 +1,3 @@
-
 import Sidebar from "../components/Sidebar";
 import { stations as initialStations } from "../data/stations";
 import "./StatisticsPage.css";
@@ -37,11 +36,11 @@ function StatisticsPage() {
       : 0;
 
   return (
-    <div className="statistics-page">
+    <div className="statistics-page" style={{ display: "flex", minHeight: "100vh" }}>
 
       <Sidebar />
 
-      <main className="statistics-content">
+      <main className="statistics-content" style={{ marginLeft: "260px", padding: "20px", flex: 1, minWidth: 0 }}>
 
         <header className="page-header">
 

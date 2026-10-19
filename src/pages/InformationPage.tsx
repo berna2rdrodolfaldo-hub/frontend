@@ -1,15 +1,14 @@
-
 import Sidebar from "../components/Sidebar";
 import "./InformationPage.css";
 
 function InformationPage() {
 
   return (
-    <div className="information-page">
+    <div className="information-page" style={{ display: "flex", minHeight: "100vh" }}>
 
       <Sidebar />
 
-      <main className="information-content">
+      <main className="information-content" style={{ marginLeft: "260px", padding: "20px", flex: 1, minWidth: 0 }}>
 
         <header className="page-header">
 
@@ -161,4 +160,3 @@ function InformationPage() {
 }
 
 export default InformationPage;
-

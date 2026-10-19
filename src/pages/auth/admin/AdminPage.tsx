@@ -124,7 +124,6 @@ function AdminPage() {
           hasFuel: hasFuel,
           queue: queueCount,
           queueLevel: queueLevel,
-          // Solo el Dueño puede modificar precios
           prices: isOwner ? prices : (list[idx]?.prices || assignedStation.prices),
           comments: commentsList,
         };
@@ -244,12 +243,6 @@ function AdminPage() {
                   : " Tienes control total de precios, estado y gestión de empleados."}
               </p>
             </div>
-                       <div className="admin-layout">
-                       <Sidebar />
-                        <main className="admin-main-content">
-                     {/* Contenido del Panel Admin */}
-           </main>
-                  </div>
 
             {/* MÉTRICAS */}
             <div className="admin-metrics-group">
@@ -325,7 +318,7 @@ function AdminPage() {
             <h2 className="section-title">Parámetros de Operación</h2>
 
             <div className="control-cards-grid">
-              {/* Card 1: Operatividad (Trabajador y Dueño) */}
+              {/* Card 1: Operatividad */}
               <div className="control-card">
                 <div className="card-header-flex">
                   <span className="card-category">OPERATIVIDAD</span>
@@ -343,7 +336,7 @@ function AdminPage() {
                 </button>
               </div>
 
-              {/* Card 2: Stock de Combustible (Trabajador y Dueño) */}
+              {/* Card 2: Stock de Combustible */}
               <div className="control-card">
                 <div className="card-header-flex">
                   <span className="card-category">INVENTARIO</span>
@@ -361,7 +354,7 @@ function AdminPage() {
                 </button>
               </div>
 
-              {/* Card 3: Tráfico / Cola (Trabajador y Dueño) */}
+              {/* Card 3: Tráfico / Cola */}
               <div className="control-card">
                 <div className="card-header-flex">
                   <span className="card-category">TRÁFICO</span>
@@ -429,7 +422,7 @@ function AdminPage() {
           </section>
         )}
 
-        {/* TAB 2: REPORTES Y NOVEDADES (Trabajador y Dueño) */}
+        {/* TAB 2: REPORTES Y NOVEDADES */}
         {activeTab === "reportes" && (
           <section className="workers-card">
             <h2 className="section-title">Publicar Novedades del Surtidor</h2>

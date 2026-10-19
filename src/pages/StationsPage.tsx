@@ -75,10 +75,10 @@ function StationsPage() {
   });
 
   return (
-    <div className="stations-page">
+    <div className="stations-page" style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
 
-      <main className="stations-content">
+      <main className="stations-content" style={{ marginLeft: "260px", padding: "20px", flex: 1, minWidth: 0 }}>
         <header className="page-header">
           <span>SURTIDORES</span>
           <h1>Estaciones de servicio</h1>
