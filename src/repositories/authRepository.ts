@@ -5,15 +5,39 @@ import type {
   LoginCredentials,
   User,
   UserRecord,
+  UserRole,
 } from "../types/auth";
 
 const SESSION_KEY = "app_session";
+const USERS_STORAGE_KEY = "sas_users";
 
-const users = initialUsers as UserRecord[];
+// Helper para inicializar y obtener usuarios con soporte para localStorage
+const getUsersList = (): UserRecord[] => {
+  const stored = localStorage.getItem(USERS_STORAGE_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      // Si hay error en el parseo, se recarga la lista base
+    }
+  }
+  // Si no existe nada guardado en el navegador, se cargan los de users.json por defecto
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(initialUsers));
+  return initialUsers as UserRecord[];
+};
+
+const saveUsersList = (usersList: UserRecord[]) => {
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(usersList));
+};
 
 export const authRepository = {
+  getAllUsers(): UserRecord[] {
+    return getUsersList();
+  },
+
   login(credentials: LoginCredentials): User | null {
-    const foundUser = users.find(
+    const currentUsers = getUsersList();
+    const foundUser = currentUsers.find(
       (user) =>
         user.carnet === credentials.carnet &&
         user.password === credentials.password
@@ -23,7 +47,6 @@ export const authRepository = {
       return null;
     }
 
-    // Mantenemos la misma estructura y añadimos los campos de vinculación al surtidor
     const sessionUser: User = {
       id: foundUser.id,
       name: foundUser.name,
@@ -50,20 +73,36 @@ export const authRepository = {
     storageService.remove(SESSION_KEY);
   },
 
-  // FUNCIÓN NUEVA (No elimina ninguna existente):
-  // Permite al Dueño registrar a sus empleados para su mismo surtidor
-  addEmployee(newEmployee: UserRecord): boolean {
-    const exists = users.some((u) => u.carnet === newEmployee.carnet);
+  createUser(newUser: UserRecord): boolean {
+    const currentUsers = getUsersList();
+    const exists = currentUsers.some((u) => u.carnet === newUser.carnet);
     if (exists) return false;
 
-    users.push(newEmployee);
+    const updated = [...currentUsers, newUser];
+    saveUsersList(updated);
     return true;
   },
 
-  // FUNCIÓN NUEVA: Obtener la lista de empleados asignados a un Dueño/Surtidor específico
+  updateUserRole(userId: string, newRole: UserRole, assignedStationId?: string): boolean {
+    const currentUsers = getUsersList();
+    const updated = currentUsers.map((u) => {
+      if (u.id === userId) {
+        return { ...u, role: newRole, assignedStationId };
+      }
+      return u;
+    });
+    saveUsersList(updated);
+    return true;
+  },
+
+  addEmployee(newEmployee: UserRecord): boolean {
+    return this.createUser(newEmployee);
+  },
+
   getEmployeesByStation(stationId: string): User[] {
-    return users.filter(
-      (u) => u.role === "TRABAJADOR" && u.assignedStationId === stationId
+    const currentUsers = getUsersList();
+    return currentUsers.filter(
+      (u) => u.role === "TRABAJADOR" && String(u.assignedStationId) === String(stationId)
     );
   },
 };

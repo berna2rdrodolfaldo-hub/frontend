@@ -26,16 +26,13 @@ function DeveloperPage() {
         setUsers(data);
         localStorage.setItem("sas_users", JSON.stringify(data));
       } else {
-        const repo = authRepository as any;
-        if (typeof repo.getAllUsers === "function") {
-          setUsers(repo.getAllUsers());
-        }
+        const localUsers = authRepository.getAllUsers();
+        setUsers(localUsers);
       }
     } catch {
-      const repo = authRepository as any;
-      if (typeof repo.getAllUsers === "function") {
-        setUsers(repo.getAllUsers());
-      }
+      // Si el servidor local no está corriendo (ej. en Vercel), carga de localStorage / users.json
+      const localUsers = authRepository.getAllUsers();
+      setUsers(localUsers);
     }
   };
 
@@ -46,41 +43,43 @@ function DeveloperPage() {
       return;
     }
 
+    const needsStation = role === "DUENO" || role === "TRABAJADOR" || (role as string) === "ADMIN";
+
+    const newUserPayload: UserRecord = {
+      id: String(Date.now()),
+      name,
+      carnet,
+      password,
+      role,
+      assignedStationId: needsStation ? stationId : undefined,
+    };
+
     try {
-      const needsStation = role === "DUENO" || role === "TRABAJADOR" || (role as string) === "ADMIN";
-
-      const newUserPayload = {
-        name,
-        carnet,
-        password,
-        role,
-        assignedStationId: needsStation ? stationId : undefined,
-      };
-
       const response = await fetch("http://localhost:3001/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newUserPayload),
       });
 
-      if (!response.ok) throw new Error("Error en el servidor");
-
-      const createdUser = await response.json();
-      const repo = authRepository as any;
-      if (typeof repo.createUser === "function") {
-        repo.createUser(createdUser);
+      if (response.ok) {
+        const createdUser = await response.json();
+        authRepository.createUser(createdUser);
+        setUsers(authRepository.getAllUsers());
+      } else {
+        authRepository.createUser(newUserPayload);
+        setUsers(authRepository.getAllUsers());
       }
-
-      setUsers((prev) => [...prev, createdUser]);
-
-      setName("");
-      setCarnet("");
-      setPassword("");
-      setRole("USUARIO");
-      alert("¡Usuario guardado exitosamente!");
     } catch {
-      alert("Asegúrate de ejecutar: node server.js (o se guardará en memoria local)");
+      // Guardado local cuando no hay servidor Node disponible
+      authRepository.createUser(newUserPayload);
+      setUsers(authRepository.getAllUsers());
     }
+
+    setName("");
+    setCarnet("");
+    setPassword("");
+    setRole("USUARIO");
+    alert("¡Usuario guardado exitosamente!");
   };
 
   const handleRoleChange = (userId: string, currentRole: UserRole) => {
@@ -89,18 +88,8 @@ function DeveloperPage() {
     const defaultStationId = stations[0]?.id ? String(stations[0].id) : "1";
     const assignedStId = newRole === "DUENO" ? (selectedStation[userId] || defaultStationId) : undefined;
 
-    const repo = authRepository as any;
-    if (typeof repo.updateUserRole === "function") {
-      repo.updateUserRole(userId, newRole, assignedStId);
-    }
-
-    setUsers((prevUsers) =>
-      prevUsers.map((u) =>
-        u.id === userId
-          ? { ...u, role: newRole, assignedStationId: assignedStId }
-          : u
-      )
-    );
+    authRepository.updateUserRole(userId, newRole, assignedStId);
+    setUsers(authRepository.getAllUsers());
   };
 
   const getStationName = (id?: string) => {
@@ -110,7 +99,7 @@ function DeveloperPage() {
   };
 
   return (
-    <div className="dashboard" style={{ display: "flex" }}>
+    <div className="dashboard" style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
 
       <main className="dashboard-content" style={{ marginLeft: "260px", padding: "20px", flex: 1, minWidth: 0 }}>
