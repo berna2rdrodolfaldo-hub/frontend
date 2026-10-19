@@ -244,6 +244,12 @@ function AdminPage() {
                   : " Tienes control total de precios, estado y gestión de empleados."}
               </p>
             </div>
+                       <div className="admin-layout">
+                       <Sidebar />
+                        <main className="admin-main-content">
+                     {/* Contenido del Panel Admin */}
+           </main>
+                  </div>
 
             {/* MÉTRICAS */}
             <div className="admin-metrics-group">

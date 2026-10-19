@@ -122,6 +122,12 @@ function DeveloperPage() {
             <p>Crea nuevos usuarios o concede/revoca rangos de Dueño/Administrador.</p>
           </div>
         </header>
+             <div className="admin-layout">
+                        <Sidebar />
+                         <main className="admin-main-content">
+                  {/* Contenido del Módulo Dev */}
+                 </main>
+                 </div>
 
         {/* FORMULARIO PARA CREAR USUARIO */}
         <section className="admin-profile-card" style={{ marginTop: "20px" }}>

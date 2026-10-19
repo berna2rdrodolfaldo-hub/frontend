@@ -496,3 +496,45 @@
     transform: translateX(0);
   }
 }
+/* Corrección global de maquetación */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #121816; /* Mismo tono oscuro del tema */
+  box-sizing: border-box;
+}
+
+/* Layout flex principal */
+.admin-layout,
+.dashboard {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: #121816 !important;
+}
+
+/* Contenido principal flexible */
+.admin-main-content,
+.dashboard-content,
+main {
+  flex: 1 !important;
+  width: calc(100% - 260px) !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 24px !important;
+  box-sizing: border-box !important;
+}
+
+/* Ajustes responsive para celulares */
+@media (max-width: 768px) {
+  .admin-main-content,
+  .dashboard-content,
+  main {
+    width: 100% !important;
+    padding-top: 70px !important;
+  }
+}
