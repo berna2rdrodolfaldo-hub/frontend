@@ -47,17 +47,21 @@ function DeveloperPage() {
     }
 
     try {
-      const isOwnerRole = role === "DUENO" || (role as string) === "ADMIN";
+      // Los roles DUENO, ADMIN y TRABAJADOR requieren tener surtidor asignado
+      const needsStation = role === "DUENO" || role === "TRABAJADOR" || (role as string) === "ADMIN";
+
+      const newUserPayload = {
+        name,
+        carnet,
+        password,
+        role,
+        assignedStationId: needsStation ? stationId : undefined,
+      };
+
       const response = await fetch("http://localhost:3001/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          carnet,
-          password,
-          role,
-          assignedStationId: isOwnerRole ? stationId : undefined,
-        }),
+        body: JSON.stringify(newUserPayload),
       });
 
       if (!response.ok) throw new Error("Error en el servidor");
@@ -172,7 +176,7 @@ function DeveloperPage() {
               </select>
             </div>
 
-            {(role === "DUENO" || (role as string) === "ADMIN") && (
+            {(role === "DUENO" || role === "TRABAJADOR" || (role as string) === "ADMIN") && (
               <div>
                 <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "5px", fontWeight: "bold" }}>Surtidor Asignado</label>
                 <select
@@ -210,7 +214,7 @@ function DeveloperPage() {
 
         {/* TABLA DE USUARIOS */}
         <section className="admin-profile-card" style={{ marginTop: "20px" }}>
-          <h2>Listado General de Usuarios</h2>
+          <h2>Listado General de Usuarios ({users.length})</h2>
           <div style={{ overflowX: "auto", marginTop: "15px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
               <thead>
@@ -225,6 +229,8 @@ function DeveloperPage() {
               <tbody>
                 {users.map((u) => {
                   const isOwner = u.role === "DUENO" || (u.role as string) === "ADMIN";
+                  const isWorker = u.role === "TRABAJADOR";
+
                   return (
                     <tr key={u.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
                       <td style={{ padding: "10px", fontWeight: "bold" }}>{u.name}</td>
@@ -241,12 +247,16 @@ function DeveloperPage() {
                                 ? "#fef08a"
                                 : isOwner
                                 ? "#d1fae5"
+                                : isWorker
+                                ? "#dbeafe"
                                 : "#e5e7eb",
                             color:
                               u.role === "DEVELOPER"
                                 ? "#854d0e"
                                 : isOwner
                                 ? "#065f46"
+                                : isWorker
+                                ? "#1e40af"
                                 : "#374151",
                           }}
                         >
@@ -254,7 +264,7 @@ function DeveloperPage() {
                         </span>
                       </td>
                       <td style={{ padding: "10px" }}>
-                        {!isOwner ? (
+                        {!isOwner && !isWorker ? (
                           <select
                             value={selectedStation[u.id] || (stations[0]?.id ? String(stations[0].id) : "1")}
                             onChange={(e) =>

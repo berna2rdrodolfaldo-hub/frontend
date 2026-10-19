@@ -8,13 +8,36 @@ function StationsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("todos");
 
-  // Cargar datos dinámicos actualizados desde localStorage
+  // Cargar datos garantizando la migración a los surtidores reales de Sucre
   const [stations, setStations] = useState(() => {
-    const saved = localStorage.getItem("sas_stations");
-    return saved ? JSON.parse(saved) : initialStations;
+    try {
+      const saved = localStorage.getItem("sas_stations");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+
+        // Detecta si en el navegador persiste la lista desactualizada
+        const hasLegacyData = parsed.some((s: any) => 
+          s.name === "Surtidor Central" || s.name === "Surtidor Norte"
+        );
+
+        if (hasLegacyData) {
+          // Limpia los datos desactualizados y carga los surtidores reales de Sucre
+          localStorage.setItem("sas_stations", JSON.stringify(initialStations));
+          return initialStations;
+        }
+
+        return parsed;
+      }
+    } catch (e) {
+      console.error("Error al recuperar datos de estaciones", e);
+    }
+    
+    // Guardar por defecto si es la primera lectura
+    localStorage.setItem("sas_stations", JSON.stringify(initialStations));
+    return initialStations;
   });
 
-  // Escuchar cambios guardados desde el Admin o en otras pestañas
+  // Escuchar cambios guardados desde el Panel Admin o en otras pestañas
   useEffect(() => {
     const handleStorageChange = () => {
       const saved = localStorage.getItem("sas_stations");
@@ -28,14 +51,9 @@ function StationsPage() {
   }, []);
 
   const filteredStations = stations.filter((station: any) => {
-
     const matchesSearch =
-      station.name
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      station.location
-        .toLowerCase()
-        .includes(search.toLowerCase());
+      station.name.toLowerCase().includes(search.toLowerCase()) ||
+      station.location.toLowerCase().includes(search.toLowerCase());
 
     if (filter === "abiertos") {
       return matchesSearch && station.open;
@@ -58,124 +76,60 @@ function StationsPage() {
 
   return (
     <div className="stations-page">
-
       <Sidebar />
 
       <main className="stations-content">
-
         <header className="page-header">
-
           <span>SURTIDORES</span>
-
-          <h1>
-            Estaciones de servicio
-          </h1>
-
+          <h1>Estaciones de servicio</h1>
           <p>
-            Consulta precios, disponibilidad,
-            estado y cantidad de autos.
+            Consulta precios, disponibilidad, estado y cantidad de autos.
           </p>
-
         </header>
 
-
         <section className="stations-controls">
-
           <div className="search-box">
-
             🔍
-
             <input
               type="text"
               placeholder="Buscar surtidor..."
               value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={(event) => setSearch(event.target.value)}
             />
-
           </div>
-
 
           <select
             value={filter}
-            onChange={(event) =>
-              setFilter(event.target.value)
-            }
+            onChange={(event) => setFilter(event.target.value)}
           >
-
-            <option value="todos">
-              Todos
-            </option>
-
-            <option value="abiertos">
-              Abiertos
-            </option>
-
-            <option value="cerrados">
-              Cerrados
-            </option>
-
-            <option value="combustible">
-              Con combustible
-            </option>
-
-            <option value="sin-combustible">
-              Sin combustible
-            </option>
-
+            <option value="todos">Todos</option>
+            <option value="abiertos">Abiertos</option>
+            <option value="cerrados">Cerrados</option>
+            <option value="combustible">Con combustible</option>
+            <option value="sin-combustible">Sin combustible</option>
           </select>
-
         </section>
-
 
         <section className="stations-results">
-
           <div className="results-heading">
-
-            <h2>
-              {filteredStations.length} surtidores
-            </h2>
-
+            <h2>{filteredStations.length} surtidores</h2>
           </div>
-
 
           <div className="stations-grid">
-
             {filteredStations.map((station: any) => (
-
-              <StationCard
-                key={station.id}
-                station={station}
-              />
-
+              <StationCard key={station.id} station={station} />
             ))}
-
           </div>
 
-
           {filteredStations.length === 0 && (
-
             <div className="no-results">
-
               <span>🔎</span>
-
-              <h3>
-                No encontramos surtidores
-              </h3>
-
-              <p>
-                Prueba con otro nombre o filtro.
-              </p>
-
+              <h3>No encontramos surtidores</h3>
+              <p>Prueba con otro nombre o filtro.</p>
             </div>
-
           )}
-
         </section>
-
       </main>
-
     </div>
   );
 }

@@ -8,12 +8,13 @@ import StatisticsPage from "../pages/StatisticsPage";
 import InformationPage from "../pages/InformationPage";
 import AdminPage from "../pages/auth/admin/AdminPage";
 import DeveloperPage from "../pages/auth/developer/DeveloperPage";
+import WorkerPage from "../pages/auth/worker/WorkerPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* RUTAS PÚBLICAS (Navegación libre sin login) */}
+      {/* RUTAS PÚBLICAS */}
       <Route path="/" element={<HomePage />} />
       <Route path="/surtidores" element={<StationsPage />} />
       <Route path="/surtidores/:id" element={<StationDetailPage />} />
@@ -23,11 +24,21 @@ function AppRoutes() {
       {/* LOGIN */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* RUTA ADMINISTRACIÓN DE SURTIDOR (Dueños, Admin, Trabajadores y Devs) */}
+      {/* RUTA AJUSTADOR OPERATIVO (Para Trabajadores, Dueños o Devs en modo prueba) */}
+      <Route
+        path="/worker"
+        element={
+          <ProtectedRoute allowedRoles={["TRABAJADOR", "DUENO", "ADMIN", "DEVELOPER"]}>
+            <WorkerPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* RUTA ADMINISTRACIÓN DE SURTIDOR (Exclusiva para Dueños y Devs) */}
       <Route
         path="/admin"
         element={
-          <ProtectedRoute allowedRoles={["DUENO", "ADMIN", "TRABAJADOR", "DEVELOPER"]}>
+          <ProtectedRoute allowedRoles={["DUENO", "ADMIN", "DEVELOPER"]}>
             <AdminPage />
           </ProtectedRoute>
         }

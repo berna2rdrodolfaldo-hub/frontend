@@ -24,10 +24,10 @@ function AdminPage() {
   const [newWorkerCarnet, setNewWorkerCarnet] = useState("");
   const [newWorkerPassword, setNewWorkerPassword] = useState("");
 
-  // Estado para nuevos comentarios/reportes del trabajador o dueño
+  // Estado para nuevos comentarios/reportes
   const [newComment, setNewComment] = useState("");
 
-  // Obtener el surtidor asignado al usuario actual
+  // Obtener el surtidor asignado
   const assignedStationIndex = stations.findIndex(
     (s: any) => String(s.id) === String(currentUser?.assignedStationId)
   );
@@ -51,17 +51,15 @@ function AdminPage() {
 
   const initialData: any = getInitialStationData();
 
-  // Estados interactivos locales
+  // Estados interactivos
   const [isOpen, setIsOpen] = useState<boolean>(() => {
     if (initialData?.open !== undefined) return Boolean(initialData.open);
     if (initialData?.isOpen !== undefined) return Boolean(initialData.isOpen);
-    if (initialData?.status !== undefined) return initialData.status === "Abierto";
     return true;
   });
 
   const [hasFuel, setHasFuel] = useState<boolean>(() => {
     if (initialData?.fuel !== undefined) return Boolean(initialData.fuel);
-    if (initialData?.hasFuel !== undefined) return Boolean(initialData.hasFuel);
     return true;
   });
 
@@ -75,14 +73,13 @@ function AdminPage() {
     return "MEDIA";
   });
 
-  // Precios editables solo por el Dueño
+  // Precios (Solo editable por Dueño)
   const [prices, setPrices] = useState({
-    especial: initialData?.prices?.especial || "Bs 6.74",
-    premium: initialData?.prices?.premium || "Bs 7.18",
-    diesel: initialData?.prices?.diesel || "Bs 6.96",
+    especial: initialData?.prices?.especial || "Bs 3.74",
+    premium: initialData?.prices?.premium || "Bs 4.79",
+    diesel: initialData?.prices?.diesel || "Bs 3.72",
   });
 
-  // Lista de comentarios/reportes
   const [commentsList, setCommentsList] = useState<any[]>(initialData?.comments || []);
 
   const loadWorkers = () => {
@@ -100,10 +97,12 @@ function AdminPage() {
   };
 
   useEffect(() => {
-    loadWorkers();
-  }, [assignedStation?.id]);
+    if (isOwner) {
+      loadWorkers();
+    }
+  }, [assignedStation?.id, isOwner]);
 
-  // Guardar y sincronizar con localStorage
+  // Guardar modificaciones operativas
   const handleSaveChanges = () => {
     if (assignedStation) {
       let queueCount = 15;
@@ -111,25 +110,13 @@ function AdminPage() {
       if (queueLevel === "MEDIA") queueCount = 15;
       if (queueLevel === "ALTA") queueCount = 30;
 
-      // 1. Modificar objeto en memoria
-      (assignedStation as any).open = isOpen;
-      (assignedStation as any).isOpen = isOpen;
-      (assignedStation as any).status = isOpen ? "Abierto" : "Cerrado";
-      (assignedStation as any).fuel = hasFuel;
-      (assignedStation as any).hasFuel = hasFuel;
-      (assignedStation as any).queue = queueCount;
-      (assignedStation as any).queueLevel = queueLevel;
-      (assignedStation as any).prices = prices;
-      (assignedStation as any).comments = commentsList;
-
-      // 2. Persistir en localStorage
       try {
         const storedStations = localStorage.getItem("sas_stations");
         let list = storedStations ? JSON.parse(storedStations) : [...stations];
         const idx = list.findIndex((s: any) => String(s.id) === String(assignedStation.id));
 
         const updatedData = {
-          ...assignedStation,
+          ...(list[idx] || assignedStation),
           open: isOpen,
           isOpen: isOpen,
           status: isOpen ? "Abierto" : "Cerrado",
@@ -137,7 +124,8 @@ function AdminPage() {
           hasFuel: hasFuel,
           queue: queueCount,
           queueLevel: queueLevel,
-          prices: prices,
+          // Solo el Dueño puede modificar precios
+          prices: isOwner ? prices : (list[idx]?.prices || assignedStation.prices),
           comments: commentsList,
         };
 
@@ -149,23 +137,21 @@ function AdminPage() {
 
         localStorage.setItem("sas_stations", JSON.stringify(list));
       } catch (e) {
-        console.error("Error guardando en localStorage", e);
+        console.error("Error al guardar en localStorage", e);
       }
 
       window.dispatchEvent(new Event("storage"));
-
-      setSuccessMessage("¡Modificaciones publicadas con éxito en el sistema!");
+      setSuccessMessage("¡Estado del surtidor publicado exitosamente!");
       setTimeout(() => setSuccessMessage(""), 4000);
     }
   };
 
-  // Agregar nuevo empleado (Solo para Dueños)
-  const handleAddEmployee = (e: React.FormEvent) => {
+  // Agregar empleado (Solo Dueño) -> Conecta a server.js (users.json)
+  const handleAddEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newWorkerName || !newWorkerCarnet || !newWorkerPassword) return;
 
-    const newEmp: UserRecord = {
-      id: String(Date.now()),
+    const newEmp = {
       name: newWorkerName,
       carnet: newWorkerCarnet,
       password: newWorkerPassword,
@@ -174,28 +160,43 @@ function AdminPage() {
       ownerId: currentUser?.id,
     };
 
-    const repo = authRepository as any;
-    if (typeof repo.addEmployee === "function") {
-      repo.addEmployee(newEmp);
+    try {
+      const response = await fetch("http://localhost:3001/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEmp),
+      });
+
+      if (!response.ok) throw new Error("Error en el servidor");
+
+      const createdWorker = await response.json();
+
+      const repo = authRepository as any;
+      if (typeof repo.addEmployee === "function") {
+        repo.addEmployee(createdWorker);
+      }
+
+      setWorkers((prev) => [...prev, createdWorker]);
+      setNewWorkerName("");
+      setNewWorkerCarnet("");
+      setNewWorkerPassword("");
+
+      setSuccessMessage(`Empleado ${createdWorker.name} guardado en users.json exitosamente.`);
+      setTimeout(() => setSuccessMessage(""), 4000);
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar el trabajador. Asegúrate de tener ejecutándose 'node server.js'.");
     }
-
-    setWorkers((prev) => [...prev, newEmp]);
-    setNewWorkerName("");
-    setNewWorkerCarnet("");
-    setNewWorkerPassword("");
-
-    setSuccessMessage(`Empleado ${newEmp.name} añadido con éxito al surtidor.`);
-    setTimeout(() => setSuccessMessage(""), 4000);
   };
 
-  // Publicar comentario/reporte de estado (Disponible para Empleados y Dueños)
+  // Publicar comentario/reporte (Trabajador y Dueño)
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
     const commentObj = {
       id: String(Date.now()),
-      userName: currentUser?.name || "Personal",
+      userName: `${currentUser?.name || "Personal"} (${role})`,
       text: newComment,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
@@ -204,13 +205,10 @@ function AdminPage() {
     setCommentsList(updatedComments);
     setNewComment("");
 
-    // Guardar cambios automáticamente al enviar reporte
-    (assignedStation as any).comments = updatedComments;
-
     try {
       const storedStations = localStorage.getItem("sas_stations");
       let list = storedStations ? JSON.parse(storedStations) : [...stations];
-      const idx = list.findIndex((s: any) => String(s.id) === String(assignedStation.id));
+      const idx = list.findIndex((s: any) => String(s.id) === String(assignedStation?.id));
       if (idx !== -1) {
         list[idx].comments = updatedComments;
         localStorage.setItem("sas_stations", JSON.stringify(list));
@@ -220,7 +218,7 @@ function AdminPage() {
     }
 
     window.dispatchEvent(new Event("storage"));
-    setSuccessMessage("¡Reporte de estado publicado!");
+    setSuccessMessage("¡Reporte publicado en la vista pública del surtidor!");
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
@@ -234,7 +232,7 @@ function AdminPage() {
           <div className="admin-header-flex">
             <div>
               <span className="admin-header-tag">
-                {isOwner ? "PANEL DE DUEÑO" : "PANEL DE TRABAJADOR"}
+                {isOwner ? "👑 PANEL DE DUEÑO" : "👷 PANEL DE TRABAJADOR"}
               </span>
               <h1 className="admin-header-title">
                 {assignedStation?.name || "Surtidor Asignado"} ⛽
@@ -242,7 +240,7 @@ function AdminPage() {
               <p className="admin-header-desc">
                 Bienvenido, <strong>{currentUser?.name || "Usuario"}</strong> ({role}). 
                 {isWorker
-                  ? " Puedes reportar si el surtidor está abierto o cerrado y publicar comentarios."
+                  ? " Puedes informar si el surtidor está abierto o cerrado, actualizar stock/cola y publicar novedades."
                   : " Tienes control total de precios, estado y gestión de empleados."}
               </p>
             </div>
@@ -252,7 +250,7 @@ function AdminPage() {
               <div className="admin-metric-card">
                 <span className="admin-metric-label">OPERACIÓN</span>
                 <strong className={isOpen ? "admin-metric-value-active" : "admin-metric-value-inactive"}>
-                  {isOpen ? "ACTIVO" : "INACTIVO"}
+                  {isOpen ? "ABIERTO" : "CERRADO"}
                 </strong>
               </div>
               {isOwner && (
@@ -279,7 +277,7 @@ function AdminPage() {
               <div className="dev-banner-icon">🛠️</div>
               <div className="dev-banner-text">
                 <h4>Módulo de Desarrollador</h4>
-                <p>Acceso especial para gestión global de usuarios, contraseñas y rangos.</p>
+                <p>Acceso especial para gestión global de usuarios y rangos.</p>
               </div>
             </div>
 
@@ -295,14 +293,14 @@ function AdminPage() {
             onClick={() => setActiveTab("surtidor")}
             className={`tab-btn ${activeTab === "surtidor" ? "active" : ""}`}
           >
-            ⚙️ Control Operativo
+            ⚙️ Estado Operativo
           </button>
           
           <button
             onClick={() => setActiveTab("reportes")}
             className={`tab-btn ${activeTab === "reportes" ? "active" : ""}`}
           >
-            💬 Reportes y Comentarios ({commentsList.length})
+            💬 Novedades y Comentarios ({commentsList.length})
           </button>
 
           {isOwner && (
@@ -315,13 +313,13 @@ function AdminPage() {
           )}
         </div>
 
-        {/* TAB 1: CONTROLES OPERATIVOS */}
+        {/* TAB 1: ESTADO OPERATIVO */}
         {activeTab === "surtidor" && (
           <section>
             <h2 className="section-title">Parámetros de Operación</h2>
 
             <div className="control-cards-grid">
-              {/* Card 1: Operatividad (Disponible para Dueño y Trabajador) */}
+              {/* Card 1: Operatividad (Trabajador y Dueño) */}
               <div className="control-card">
                 <div className="card-header-flex">
                   <span className="card-category">OPERATIVIDAD</span>
@@ -339,7 +337,7 @@ function AdminPage() {
                 </button>
               </div>
 
-              {/* Card 2: Inventario (Solo Dueño/Dev puede editar, Trabajador solo ver) */}
+              {/* Card 2: Stock de Combustible (Trabajador y Dueño) */}
               <div className="control-card">
                 <div className="card-header-flex">
                   <span className="card-category">INVENTARIO</span>
@@ -350,43 +348,39 @@ function AdminPage() {
                 <h3>Combustible</h3>
                 <button
                   type="button"
-                  disabled={!isOwner}
-                  onClick={() => isOwner && setHasFuel(!hasFuel)}
+                  onClick={() => setHasFuel(!hasFuel)}
                   className={`action-toggle-btn ${hasFuel ? "btn-fuel-on" : "btn-fuel-off"}`}
-                  style={{ opacity: isOwner ? 1 : 0.7, cursor: isOwner ? "pointer" : "not-allowed" }}
                 >
                   {hasFuel ? "⛽ Hay Gasolina" : "⚠️ Sin Combustible"}
                 </button>
               </div>
 
-              {/* Card 3: Tráfico / Fila (Solo Dueño) */}
-              {isOwner && (
-                <div className="control-card">
-                  <div className="card-header-flex">
-                    <span className="card-category">TRÁFICO</span>
-                    <span className="card-status-dot open">NIVEL {queueLevel}</span>
-                  </div>
-                  <h3>Fila de Vehículos</h3>
-                  <select
-                    value={queueLevel}
-                    onChange={(e) => setQueueLevel(e.target.value as any)}
-                    className="queue-select"
-                  >
-                    <option value="BAJA">🟢 Fila Baja (Pocos vehículos)</option>
-                    <option value="MEDIA">🟡 Fila Moderada</option>
-                    <option value="ALTA">🔴 Fila Alta (Congestionado)</option>
-                  </select>
+              {/* Card 3: Tráfico / Cola (Trabajador y Dueño) */}
+              <div className="control-card">
+                <div className="card-header-flex">
+                  <span className="card-category">TRÁFICO</span>
+                  <span className="card-status-dot open">NIVEL {queueLevel}</span>
                 </div>
-              )}
+                <h3>Fila de Vehículos</h3>
+                <select
+                  value={queueLevel}
+                  onChange={(e) => setQueueLevel(e.target.value as any)}
+                  className="queue-select"
+                >
+                  <option value="BAJA">🟢 Fila Baja (Pocos vehículos)</option>
+                  <option value="MEDIA">🟡 Fila Moderada</option>
+                  <option value="ALTA">🔴 Fila Alta (Congestionado)</option>
+                </select>
+              </div>
 
-              {/* Card 4: Precios (Solo Dueño) */}
+              {/* Card 4: Precios (SOLO VISIBLE Y EDITABLE POR EL DUEÑO) */}
               {isOwner && (
                 <div className="control-card" style={{ gridColumn: "span 2" }}>
                   <div className="card-header-flex">
-                    <span className="card-category">TARIFAS</span>
+                    <span className="card-category">TARIFAS (EXCLUSIVO DUEÑO)</span>
                     <span className="card-status-dot open">PRECIOS ACTUALES</span>
                   </div>
-                  <h3>Precios de Combustibles</h3>
+                  <h3>Precios Oficiales</h3>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginTop: "10px" }}>
                     <div>
                       <label style={{ fontSize: "0.75rem", fontWeight: 700 }}>Especial:</label>
@@ -420,28 +414,30 @@ function AdminPage() {
               )}
             </div>
 
-            {/* BOTÓN DE PUBLICAR */}
+            {/* BOTÓN DE GUARDAR ESTADO */}
             <div className="save-action-container">
               <button onClick={handleSaveChanges} className="modify-save-btn">
-                💾 Guardar y Publicar Estado del Surtidor
+                💾 Publicar Estado Operativo del Surtidor
               </button>
             </div>
           </section>
         )}
 
-        {/* TAB 2: REPORTES Y COMENTARIOS */}
+        {/* TAB 2: REPORTES Y NOVEDADES (Trabajador y Dueño) */}
         {activeTab === "reportes" && (
           <section className="workers-card">
-            <h2 className="section-title">Novedades y Reportes del Surtidor</h2>
-            
+            <h2 className="section-title">Publicar Novedades del Surtidor</h2>
+            <p className="workers-desc">Los comentarios publicados aquí aparecerán en la vista oficial del surtidor.</p>
+
             <form onSubmit={handleAddComment} style={{ marginBottom: "24px", display: "flex", gap: "10px" }}>
               <input
                 type="text"
-                placeholder="Escribe un informe o comentario de estado (ej. Hay fila moderada, cisterna en camino...)"
+                placeholder="Escribe una novedad (ej. Cisterna de diésel recién llegada, atención rápida...)"
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 className="queue-select"
                 style={{ flex: 1 }}
+                required
               />
               <button type="submit" className="modify-save-btn" style={{ padding: "10px 20px" }}>
                 Enviar Reporte
@@ -450,7 +446,7 @@ function AdminPage() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {commentsList.length === 0 ? (
-                <p className="no-workers">No hay reportes ni novedades publicadas hoy.</p>
+                <p className="no-workers">No hay reportes publicados recientemente.</p>
               ) : (
                 commentsList.map((c, idx) => (
                   <div key={c.id || idx} style={{ padding: "12px 16px", backgroundColor: "#f8fafc", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
@@ -466,15 +462,14 @@ function AdminPage() {
           </section>
         )}
 
-        {/* TAB 3: TRABAJADORES (EXCLUSIVO DUEÑO) */}
+        {/* TAB 3: EMPLEADOS (SOLO VISIBLE PARA DUEÑO) */}
         {activeTab === "trabajadores" && isOwner && (
           <section className="workers-card">
             <h2 className="section-title">Gestión de Empleados Asignados</h2>
             <p className="workers-desc">
-              Añade y gestiona los trabajadores asignados exclusivamente a este surtidor.
+              Añade trabajadores que se guardarán directamente en `users.json`.
             </p>
 
-            {/* FORMULARIO AGREGAR EMPLEADO */}
             <form onSubmit={handleAddEmployee} style={{ backgroundColor: "#f8fafc", padding: "18px", borderRadius: "12px", border: "1px solid #e2e8f0", marginBottom: "24px" }}>
               <h3 style={{ margin: "0 0 12px 0", fontSize: "0.95rem" }}>➕ Registrar Nuevo Empleado</h3>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "10px", alignItems: "end" }}>

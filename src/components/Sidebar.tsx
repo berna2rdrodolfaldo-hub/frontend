@@ -16,9 +16,10 @@ function Sidebar() {
   const rawRole = user?.role || user?.rol || "";
   const role = String(rawRole).toUpperCase().trim();
 
-  // Verificación para habilitar el enlace al Panel Admin
+  // Verificación de roles
   const isDev = role === "DEVELOPER" || role === "DEV";
-  const isAdmin = role === "ADMIN" || isDev;
+  const isOwner = role === "DUENO" || role === "ADMIN" || isDev;
+  const isWorker = role === "TRABAJADOR";
 
   return (
     <aside className="sidebar">
@@ -46,11 +47,27 @@ function Sidebar() {
           Estadísticas
         </NavLink>
 
-        {/* Único acceso de administración en la barra lateral */}
-        {isAdmin && (
+        {/* ACCESO A JUSTADOR DE ESTADO PARA TRABAJADORES */}
+        {isWorker && (
+          <NavLink to="/worker" className="nav-item nav-admin">
+            <span>⚙️</span>
+            Ajustador de Estado
+          </NavLink>
+        )}
+
+        {/* ACCESO A PANEL ADMINISTRATIVO PARA DUEÑOS */}
+        {isOwner && (
           <NavLink to="/admin" className="nav-item nav-admin">
             <span>⚙️</span>
             Panel Admin
+          </NavLink>
+        )}
+
+        {/* MÓDULO EXCLUSIVO DE DESARROLLADOR */}
+        {isDev && (
+          <NavLink to="/developer" className="nav-item nav-admin">
+            <span>👑</span>
+            Módulo Dev
           </NavLink>
         )}
 

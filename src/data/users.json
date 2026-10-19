@@ -53,5 +53,13 @@
     "role": "ADMIN",
     "assignedStationId": "3",
     "id": "1792270539239"
+  },
+  {
+    "name": "marco",
+    "carnet": "002",
+    "password": "123",
+    "role": "TRABAJADOR",
+    "assignedStationId": "4",
+    "id": "1792367643154"
   }
 ]

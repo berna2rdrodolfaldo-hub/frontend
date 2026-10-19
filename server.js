@@ -24,7 +24,7 @@ app.get('/api/users', (req, res) => {
   });
 });
 
-// Ruta POST para agregar un nuevo usuario
+// Ruta POST para agregar un nuevo usuario o trabajador
 app.post('/api/users', (req, res) => {
   const newUser = req.body;
 
@@ -34,17 +34,21 @@ app.post('/api/users', (req, res) => {
       return res.status(500).send('Error al leer el archivo users.json');
     }
 
-    const users = JSON.parse(data);
-    newUser.id = String(Date.now());
-    users.push(newUser);
+    try {
+      const users = JSON.parse(data);
+      newUser.id = String(Date.now());
+      users.push(newUser);
 
-    fs.writeFile(filePath, JSON.stringify(users, null, 2), (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send('Error al escribir en users.json');
-      }
-      res.status(201).json(newUser);
-    });
+      fs.writeFile(filePath, JSON.stringify(users, null, 2), (writeErr) => {
+        if (writeErr) {
+          console.error(writeErr);
+          return res.status(500).send('Error al escribir en users.json');
+        }
+        res.status(201).json(newUser);
+      });
+    } catch (parseErr) {
+      res.status(500).send('Error al procesar users.json');
+    }
   });
 });
 
