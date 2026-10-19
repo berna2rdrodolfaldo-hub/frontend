@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { authRepository } from "../repositories/authRepository";
 import "./Sidebar.css";
 
 function Sidebar() {
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
   const user = authRepository.getCurrentUser() as any;
 
   // Función para borrar la sesión y redirigir
@@ -21,84 +23,105 @@ function Sidebar() {
   const isOwner = role === "DUENO" || role === "ADMIN" || isDev;
   const isWorker = role === "TRABAJADOR";
 
+  // Función para cerrar el menú lateral en dispositivos móviles
+  const closeMenu = () => setIsOpen(false);
+
   return (
-    <aside className="sidebar">
-      <div className="sidebar-brand">
-        <div className="brand-icon">⛽</div>
-        <div>
-          <h2>SAS</h2>
-          <span>Administración</span>
-        </div>
-      </div>
+    <>
+      {/* BOTÓN HAMBURGUESA FLOTANTE SOLO EN CELULARES */}
+      <button
+        className="mobile-menu-toggle"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle Menu"
+        type="button"
+      >
+        {isOpen ? "✕" : "☰"}
+      </button>
 
-      <nav className="sidebar-nav">
-        <NavLink to="/" className="nav-item">
-          <span>🏠</span>
-          Inicio
-        </NavLink>
+      {/* FONDO OSCURO DE Sombra AL ABRIR EL MENÚ EN MÓVILES */}
+      {isOpen && <div className="sidebar-overlay" onClick={closeMenu} />}
 
-        <NavLink to="/surtidores" className="nav-item">
-          <span>⛽</span>
-          Surtidores
-        </NavLink>
-
-        <NavLink to="/estadisticas" className="nav-item">
-          <span>📊</span>
-          Estadísticas
-        </NavLink>
-
-        {/* ACCESO A JUSTADOR DE ESTADO PARA TRABAJADORES */}
-        {isWorker && (
-          <NavLink to="/worker" className="nav-item nav-admin">
-            <span>⚙️</span>
-            Ajustador de Estado
-          </NavLink>
-        )}
-
-        {/* ACCESO A PANEL ADMINISTRATIVO PARA DUEÑOS */}
-        {isOwner && (
-          <NavLink to="/admin" className="nav-item nav-admin">
-            <span>⚙️</span>
-            Panel Admin
-          </NavLink>
-        )}
-
-        {/* MÓDULO EXCLUSIVO DE DESARROLLADOR */}
-        {isDev && (
-          <NavLink to="/developer" className="nav-item nav-admin">
-            <span>👑</span>
-            Módulo Dev
-          </NavLink>
-        )}
-
-        <NavLink to="/informacion" className="nav-item">
-          <span>ℹ️</span>
-          Información
-        </NavLink>
-      </nav>
-
-      <div className="sidebar-bottom">
-        {user && (
-          <div className="user-card">
-            <div className="user-avatar">
-              {user.name?.charAt(0).toUpperCase() || "U"}
-            </div>
-            <div className="user-info">
-              <strong>{user.name}</strong>
-              <span>{user.role || user.rol}</span>
-            </div>
+      <aside className={`sidebar ${isOpen ? "sidebar-open" : ""}`}>
+        <div className="sidebar-brand">
+          <div className="brand-icon">⛽</div>
+          <div>
+            <h2>SAS</h2>
+            <span>Administración</span>
           </div>
-        )}
+        </div>
 
-        <button
-          className="sidebar-logout"
-          onClick={handleLogout}
-          type="button"
-        >
-          🚪 Cerrar sesión
-        </button>
-      </div>
-    </aside>
+        <nav className="sidebar-nav">
+          <NavLink to="/" className="nav-item" onClick={closeMenu}>
+            <span>🏠</span>
+            Inicio
+          </NavLink>
+
+          <NavLink to="/surtidores" className="nav-item" onClick={closeMenu}>
+            <span>⛽</span>
+            Surtidores
+          </NavLink>
+
+          <NavLink to="/estadisticas" className="nav-item" onClick={closeMenu}>
+            <span>📊</span>
+            Estadísticas
+          </NavLink>
+
+          {/* ACCESO A AJUSTADOR DE ESTADO PARA TRABAJADORES */}
+          {isWorker && (
+            <NavLink to="/worker" className="nav-item nav-admin" onClick={closeMenu}>
+              <span>⚙️</span>
+              Ajustador de Estado
+            </NavLink>
+          )}
+
+          {/* ACCESO A PANEL ADMINISTRATIVO PARA DUEÑOS */}
+          {isOwner && (
+            <NavLink to="/admin" className="nav-item nav-admin" onClick={closeMenu}>
+              <span>⚙️</span>
+              Panel Admin
+            </NavLink>
+          )}
+
+          {/* MÓDULO EXCLUSIVO DE DESARROLLADOR */}
+          {isDev && (
+            <NavLink to="/developer" className="nav-item nav-admin" onClick={closeMenu}>
+              <span>👑</span>
+              Módulo Dev
+            </NavLink>
+          )}
+
+          <NavLink to="/informacion" className="nav-item" onClick={closeMenu}>
+            <span>ℹ️</span>
+            Información
+          </NavLink>
+        </nav>
+
+        <div className="sidebar-bottom">
+          {user && (
+            <div className="user-card">
+              <div className="user-avatar">
+                {user.name?.charAt(0).toUpperCase() || "U"}
+              </div>
+              <div className="user-info">
+                <strong>{user.name}</strong>
+                <span>{user.role || user.rol}</span>
+              </div>
+            </div>
+          )}
+
+          <button
+            className="sidebar-logout"
+            onClick={() => {
+              closeMenu();
+              handleLogout();
+            }}
+            type="button"
+          >
+            🚪 Cerrar sesión
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
 
