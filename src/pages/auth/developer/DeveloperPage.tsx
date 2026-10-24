@@ -30,7 +30,6 @@ function DeveloperPage() {
         setUsers(localUsers);
       }
     } catch {
-      // Si el servidor local no está corriendo (ej. en Vercel), carga de localStorage / users.json
       const localUsers = authRepository.getAllUsers();
       setUsers(localUsers);
     }
@@ -43,7 +42,8 @@ function DeveloperPage() {
       return;
     }
 
-    const needsStation = role === "DUENO" || role === "TRABAJADOR" || (role as string) === "ADMIN";
+    const roleStr = role as string;
+    const needsStation = roleStr === "ADMIN" || roleStr === "DUENO" || roleStr === "TRABAJADOR";
 
     const newUserPayload: UserRecord = {
       id: String(Date.now()),
@@ -70,7 +70,6 @@ function DeveloperPage() {
         setUsers(authRepository.getAllUsers());
       }
     } catch {
-      // Guardado local cuando no hay servidor Node disponible
       authRepository.createUser(newUserPayload);
       setUsers(authRepository.getAllUsers());
     }
@@ -83,10 +82,11 @@ function DeveloperPage() {
   };
 
   const handleRoleChange = (userId: string, currentRole: UserRole) => {
-    const isOwnerCurrently = currentRole === "DUENO" || (currentRole as string) === "ADMIN";
-    const newRole: UserRole = isOwnerCurrently ? "USUARIO" : "DUENO";
+    const roleStr = currentRole as string;
+    const isOwnerCurrently = roleStr === "ADMIN" || roleStr === "DUENO";
+    const newRole = (isOwnerCurrently ? "USUARIO" : "ADMIN") as UserRole;
     const defaultStationId = stations[0]?.id ? String(stations[0].id) : "1";
-    const assignedStId = newRole === "DUENO" ? (selectedStation[userId] || defaultStationId) : undefined;
+    const assignedStId = (newRole as string) === "ADMIN" || (newRole as string) === "DUENO" ? (selectedStation[userId] || defaultStationId) : undefined;
 
     authRepository.updateUserRole(userId, newRole, assignedStId);
     setUsers(authRepository.getAllUsers());
@@ -107,7 +107,7 @@ function DeveloperPage() {
           <div>
             <span className="header-label">MÓDULO EXCLUSIVO - DESARROLLADOR</span>
             <h1>Gestión Global de Usuarios y Rangos 👑</h1>
-            <p>Crea nuevos usuarios o concede/revoca rangos de Dueño/Administrador.</p>
+            <p>Crea nuevos usuarios o concede/revoca rangos de Admin.</p>
           </div>
         </header>
 
@@ -160,11 +160,11 @@ function DeveloperPage() {
               >
                 <option value="USUARIO">USUARIO</option>
                 <option value="TRABAJADOR">TRABAJADOR</option>
-                <option value="ADMIN">DUEÑO DE SURTIDOR</option>
+                <option value="ADMIN">ADMIN</option>
               </select>
             </div>
 
-            {(role === "DUENO" || role === "TRABAJADOR" || (role as string) === "ADMIN") && (
+            {((role as string) === "ADMIN" || (role as string) === "DUENO" || role === "TRABAJADOR") && (
               <div>
                 <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "5px", fontWeight: "bold" }}>Surtidor Asignado</label>
                 <select
@@ -216,8 +216,9 @@ function DeveloperPage() {
               </thead>
               <tbody>
                 {users.map((u) => {
-                  const isOwner = u.role === "DUENO" || (u.role as string) === "ADMIN";
-                  const isWorker = u.role === "TRABAJADOR";
+                  const roleStr = u.role as string;
+                  const isOwner = roleStr === "ADMIN" || roleStr === "DUENO";
+                  const isWorker = roleStr === "TRABAJADOR";
 
                   return (
                     <tr key={u.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
@@ -231,7 +232,7 @@ function DeveloperPage() {
                             fontSize: "0.85rem",
                             fontWeight: "bold",
                             backgroundColor:
-                              u.role === "DEVELOPER"
+                              roleStr === "DEVELOPER"
                                 ? "#fef08a"
                                 : isOwner
                                 ? "#d1fae5"
@@ -239,7 +240,7 @@ function DeveloperPage() {
                                 ? "#dbeafe"
                                 : "#e5e7eb",
                             color:
-                              u.role === "DEVELOPER"
+                              roleStr === "DEVELOPER"
                                 ? "#854d0e"
                                 : isOwner
                                 ? "#065f46"
@@ -248,7 +249,7 @@ function DeveloperPage() {
                                 : "#374151",
                           }}
                         >
-                          {u.role}
+                          {roleStr === "DUENO" ? "ADMIN" : roleStr}
                         </span>
                       </td>
                       <td style={{ padding: "10px" }}>
@@ -271,7 +272,7 @@ function DeveloperPage() {
                         )}
                       </td>
                       <td style={{ padding: "10px" }}>
-                        {u.role === "DEVELOPER" ? (
+                        {roleStr === "DEVELOPER" ? (
                           <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>
                             (Desarrollador Único)
                           </span>
@@ -303,7 +304,7 @@ function DeveloperPage() {
                               fontWeight: "bold",
                             }}
                           >
-                            👑 Otorgar Rango (Hacer Dueño)
+                            👑 Otorgar Rango (Hacer Admin)
                           </button>
                         )}
                       </td>
