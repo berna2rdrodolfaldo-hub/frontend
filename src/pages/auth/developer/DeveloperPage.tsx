@@ -160,7 +160,7 @@ function DeveloperPage() {
               >
                 <option value="USUARIO">USUARIO</option>
                 <option value="TRABAJADOR">TRABAJADOR</option>
-                <option value="DUENO">DUEÑO DE SURTIDOR</option>
+                <option value="ADMIN">DUEÑO DE SURTIDOR</option>
               </select>
             </div>
 
