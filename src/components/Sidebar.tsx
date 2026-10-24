@@ -14,14 +14,19 @@ function Sidebar() {
     navigate("/login", { replace: true });
   };
 
+  // Función para ir al login si no hay sesión
+  const handleLoginRedirect = () => {
+    navigate("/login", { replace: true });
+  };
+
   // Normalizamos el rol a mayúsculas
   const rawRole = user?.role || user?.rol || "";
   const role = String(rawRole).toUpperCase().trim();
 
-  // Verificación de roles
-  const isDev = role === "DEVELOPER" || role === "DEV";
-  const isOwner = role === "DUENO" || role === "ADMIN" || isDev;
-  const isWorker = role === "TRABAJADOR";
+  // Verificación de roles (si no hay usuario, por defecto es rol visitante/usuario básico sin privilegios admin/dev)
+  const isDev = user && (role === "DEVELOPER" || role === "DEV");
+  const isOwner = user && (role === "DUENO" || role === "ADMIN" || isDev);
+  const isWorker = user && (role === "TRABAJADOR");
 
   // Función para cerrar el menú lateral en dispositivos móviles
   const closeMenu = () => setIsOpen(false);
@@ -97,7 +102,7 @@ function Sidebar() {
         </nav>
 
         <div className="sidebar-bottom">
-          {user && (
+          {user ? (
             <div className="user-card">
               <div className="user-avatar">
                 {user.name?.charAt(0).toUpperCase() || "U"}
@@ -107,18 +112,39 @@ function Sidebar() {
                 <span>{user.role || user.rol}</span>
               </div>
             </div>
+          ) : (
+            <div className="user-card">
+              <div className="user-avatar">U</div>
+              <div className="user-info">
+                <strong>Usuario</strong>
+                <span>Invitado</span>
+              </div>
+            </div>
           )}
 
-          <button
-            className="sidebar-logout"
-            onClick={() => {
-              closeMenu();
-              handleLogout();
-            }}
-            type="button"
-          >
-            🚪 Cerrar sesión
-          </button>
+          {user ? (
+            <button
+              className="sidebar-logout"
+              onClick={() => {
+                closeMenu();
+                handleLogout();
+              }}
+              type="button"
+            >
+              🚪 Cerrar sesión
+            </button>
+          ) : (
+            <button
+              className="sidebar-logout"
+              onClick={() => {
+                closeMenu();
+                handleLoginRedirect();
+              }}
+              type="button"
+            >
+              🔑 Iniciar sesión
+            </button>
+          )}
         </div>
       </aside>
     </>

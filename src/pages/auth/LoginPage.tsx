@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-
 import LoginForm from "../../components/auth/LoginForm";
 import { authRepository } from "../../repositories/authRepository";
-
 import type { LoginCredentials } from "../../types/auth";
 
 function LoginPage() {
@@ -11,13 +9,11 @@ function LoginPage() {
   const [error, setError] = useState("");
 
   if (authRepository.isAuthenticated()) {
-    // Redirigir siempre a la página principal sin importar el rol
     return <Navigate to="/" replace />;
   }
 
   const handleLogin = (credentials: LoginCredentials) => {
     setError("");
-
     const user = authRepository.login(credentials);
 
     if (!user) {
@@ -25,17 +21,13 @@ function LoginPage() {
       return;
     }
 
-    // Redirección unificada al Inicio para todos los usuarios
     navigate("/", { replace: true });
   };
 
   return (
-    <main>
-      <LoginForm
-        error={error}
-        onSubmit={handleLogin}
-      />
-    </main>
+    <div style={{ width: "100vw", minHeight: "100vh", margin: 0, padding: 0 }}>
+      <LoginForm error={error} onSubmit={handleLogin} />
+    </div>
   );
 }
 
