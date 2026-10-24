@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import "./InformationPage.css";
 import surtidorImg from "../Imagenes/surtidor-principal.jpg";
@@ -43,10 +44,13 @@ function InformationPage() {
           </div>
 
           <div className="information-image">
-            <img
-              src={surtidorImg}
-              alt="Surtidor de combustible"
-            />
+            <Link to="/surtidores">
+              <img
+                src={surtidorImg}
+                alt="Surtidor de combustible"
+                style={{ cursor: "pointer", display: "block", width: "100%" }}
+              />
+            </Link>
           </div>
         </section>
 
