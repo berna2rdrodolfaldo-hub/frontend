@@ -4,7 +4,6 @@ import { authRepository } from "../repositories/authRepository";
 import { stations as initialStations } from "../data/stations";
 import Sidebar from "../components/Sidebar";
 import StationCard from "../components/StationCard";
-import ThemeToggle from "../components/ThemeToggle"; // 👈 Importamos el botón de tema
 import "./HomePage.css";
 
 function HomePage() {
@@ -81,9 +80,6 @@ function HomePage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {/* 📍 Botón para alternar entre Modo Claro y Oscuro */}
-            <ThemeToggle />
-
             <div className="header-status">
               <span className="online-dot"></span>
               Sistema operativo

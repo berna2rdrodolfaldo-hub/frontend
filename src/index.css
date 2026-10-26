@@ -2,35 +2,9 @@
   box-sizing: border-box;
 }
 
-:root[data-theme="light"] {
-  --bg-primary: #f8fafc;
-  --bg-card: #ffffff;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --border-color: #e2e8f0;
-}
 
-:root[data-theme="dark"] {
-  --bg-primary: #0f172a;
-  --bg-card: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --border-color: #334155;
-}
-
-/* Aplicación global del fondo y texto */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: var(--bg-primary) !important;
-  color: var(--text-primary) !important;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Hacer que los contenedores principales y tarjetas hereden las variables */
-.dashboard, .dashboard-content, .stat-card, .summary-card, .quick-card {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-  border-color: var(--border-color);
-  transition: all 0.3s ease;
+  background: #f3f4f6;
 }
