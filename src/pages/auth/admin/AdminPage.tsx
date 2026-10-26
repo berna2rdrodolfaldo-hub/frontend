@@ -63,15 +63,20 @@ function AdminPage() {
     return true;
   });
 
-  const [queueLevel, setQueueLevel] = useState<"BAJA" | "MEDIA" | "ALTA">((): "BAJA" | "MEDIA" | "ALTA" => {
-    if (initialData?.queueLevel) return initialData.queueLevel;
-    if (initialData?.queue !== undefined) {
-      if (initialData.queue <= 8) return "BAJA";
-      if (initialData.queue <= 20) return "MEDIA";
-      return "ALTA";
-    }
-    return "MEDIA";
+  // Estado para la cantidad numérica aproximada de autos
+  const [queueCountInput, setQueueCountInput] = useState<number>(() => {
+    if (initialData?.queue !== undefined) return Number(initialData.queue);
+    return 15;
   });
+
+  // Cálculo automático del nivel de fila según la cantidad de autos
+  const getQueueLevelFromCount = (count: number): "BAJA" | "MEDIA" | "ALTA" => {
+    if (count <= 8) return "BAJA";
+    if (count <= 20) return "MEDIA";
+    return "ALTA";
+  };
+
+  const queueLevel = getQueueLevelFromCount(queueCountInput);
 
   // Precios (Solo editable por Dueño)
   const [prices, setPrices] = useState({
@@ -105,10 +110,7 @@ function AdminPage() {
   // Guardar modificaciones operativas
   const handleSaveChanges = () => {
     if (assignedStation) {
-      let queueCount = 15;
-      if (queueLevel === "BAJA") queueCount = 5;
-      if (queueLevel === "MEDIA") queueCount = 15;
-      if (queueLevel === "ALTA") queueCount = 30;
+      const calculatedLevel = getQueueLevelFromCount(queueCountInput);
 
       try {
         const storedStations = localStorage.getItem("sas_stations");
@@ -122,8 +124,8 @@ function AdminPage() {
           status: isOpen ? "Abierto" : "Cerrado",
           fuel: hasFuel,
           hasFuel: hasFuel,
-          queue: queueCount,
-          queueLevel: queueLevel,
+          queue: queueCountInput,
+          queueLevel: calculatedLevel,
           prices: isOwner ? prices : (list[idx]?.prices || assignedStation.prices),
           comments: commentsList,
         };
@@ -361,15 +363,22 @@ function AdminPage() {
                   <span className="card-status-dot open">NIVEL {queueLevel}</span>
                 </div>
                 <h3>Fila de Vehículos</h3>
-                <select
-                  value={queueLevel}
-                  onChange={(e) => setQueueLevel(e.target.value as any)}
-                  className="queue-select"
-                >
-                  <option value="BAJA">🟢 Fila Baja (Pocos vehículos)</option>
-                  <option value="MEDIA">🟡 Fila Moderada</option>
-                  <option value="ALTA">🔴 Fila Alta (Congestionado)</option>
-                </select>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
+                  <label style={{ fontSize: "0.75rem", fontWeight: 700 }}>
+                    Cantidad aproximada de autos:
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={queueCountInput}
+                    onChange={(e) => setQueueCountInput(Number(e.target.value))}
+                    className="queue-select"
+                    placeholder="Ej. 12"
+                  />
+                  <span style={{ fontSize: "0.8rem", color: "#64748b" }}>
+                    Estado automático: <strong>{queueLevel}</strong> ({queueLevel === "BAJA" ? "Pocos vehículos" : queueLevel === "MEDIA" ? "Moderado" : "Congestionado"})
+                  </span>
+                </div>
               </div>
 
               {/* Card 4: Precios (SOLO VISIBLE Y EDITABLE POR EL DUEÑO) */}
