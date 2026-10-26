@@ -45,6 +45,14 @@ function StationDetailPage() {
     );
   }
 
+  // Obtenemos los estados de los combustibles de forma segura
+  const fuels = (station as any)?.fuels || {
+    especial: station.fuel ?? true,
+    premium: station.fuel ?? true,
+    diesel: station.fuel ?? true,
+    gnv: station.fuel ?? true,
+  };
+
   return (
     <div className="station-detail-layout">
       <Sidebar />
@@ -68,13 +76,40 @@ function StationDetailPage() {
 
         {/* INFORMACIÓN EN TIEMPO REAL */}
         <div className="station-info-grid">
-          {/* Card 1: Estado del Combustible */}
-          <div className="info-card">
-            <span className="info-card-label">COMBUSTIBLE</span>
-            <h3>{station.fuel ? "⛽ Hay Gasolina Disponible" : "⚠️ Sin Combustible"}</h3>
-            <p className="info-card-sub">
-              {station.fuel ? "Abastecimiento regular para vehículos" : "Cisterna en camino o agotado"}
-            </p>
+          {/* Card 1: Inventario Independiente de Combustibles */}
+          <div className="info-card" style={{ gridColumn: "span 1" }}>
+            <span className="info-card-label">INVENTARIO DE COMBUSTIBLES</span>
+            <h3 style={{ margin: "8px 0 12px 0", fontSize: "1rem" }}>Disponibilidad por Tipo</h3>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.85rem" }}>
+                <span>Gasolina Especial:</span>
+                <strong style={{ color: fuels.especial ? "#059669" : "#dc2626" }}>
+                  {fuels.especial ? "🟢 Hay Stock" : "🔴 Agotado"}
+                </strong>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.85rem" }}>
+                <span>Gasolina Premium:</span>
+                <strong style={{ color: fuels.premium ? "#059669" : "#dc2626" }}>
+                  {fuels.premium ? "🟢 Hay Stock" : "🔴 Agotado"}
+                </strong>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.85rem" }}>
+                <span>Diésel:</span>
+                <strong style={{ color: fuels.diesel ? "#059669" : "#dc2626" }}>
+                  {fuels.diesel ? "🟢 Hay Stock" : "🔴 Agotado"}
+                </strong>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.85rem" }}>
+                <span>GNV:</span>
+                <strong style={{ color: fuels.gnv ? "#059669" : "#dc2626" }}>
+                  {fuels.gnv ? "🟢 Hay Stock" : "🔴 Agotado"}
+                </strong>
+              </div>
+            </div>
           </div>
 
           {/* Card 2: Fila de Vehículos */}
