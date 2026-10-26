@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { FormEventHandler } from "react";
 import type { LoginCredentials } from "../../types/auth";
 import "./LoginForm.css";
@@ -9,6 +10,7 @@ interface LoginFormProps {
 }
 
 function LoginForm({ error, onSubmit }: LoginFormProps) {
+  const navigate = useNavigate();
   const [carnet, setCarnet] = useState("");
   const [password, setPassword] = useState("");
 
@@ -75,6 +77,35 @@ function LoginForm({ error, onSubmit }: LoginFormProps) {
 
           <button type="submit">
             Ingresar
+          </button>
+
+          {/* Botón para volver o mirar como usuario dentro de la tarjeta */}
+          <button
+            type="button"
+            onClick={() => navigate("/", { replace: true })}
+            style={{
+              marginTop: "12px",
+              width: "100%",
+              backgroundColor: "transparent",
+              color: "#94a3b8",
+              border: "1px dashed #475569",
+              padding: "10px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: "0.9rem",
+              transition: "all 0.2s ease",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.color = "#ffffff";
+              e.currentTarget.style.borderColor = "#94a3b8";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = "#94a3b8";
+              e.currentTarget.style.borderColor = "#475569";
+            }}
+          >
+            ← Volver / Mirar como usuario
           </button>
         </form>
       </div>
