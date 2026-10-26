@@ -58,9 +58,12 @@ function AdminPage() {
     return true;
   });
 
-  const [hasFuel, setHasFuel] = useState<boolean>(() => {
-    if (initialData?.fuel !== undefined) return Boolean(initialData.fuel);
-    return true;
+  // 📍 Estados independientes para cada tipo de combustible
+  const [fuels, setFuels] = useState({
+    especial: initialData?.fuels?.especial ?? initialData?.fuel ?? true,
+    premium: initialData?.fuels?.premium ?? initialData?.fuel ?? true,
+    diesel: initialData?.fuels?.diesel ?? initialData?.fuel ?? true,
+    gnv: initialData?.fuels?.gnv ?? initialData?.fuel ?? true,
   });
 
   // Estado para la cantidad numérica aproximada de autos
@@ -111,6 +114,8 @@ function AdminPage() {
   const handleSaveChanges = () => {
     if (assignedStation) {
       const calculatedLevel = getQueueLevelFromCount(queueCountInput);
+      // Determinamos si hay al menos un combustible disponible para mantener compatibilidad general
+      const hasAnyFuel = Object.values(fuels).some(Boolean);
 
       try {
         const storedStations = localStorage.getItem("sas_stations");
@@ -122,8 +127,9 @@ function AdminPage() {
           open: isOpen,
           isOpen: isOpen,
           status: isOpen ? "Abierto" : "Cerrado",
-          fuel: hasFuel,
-          hasFuel: hasFuel,
+          fuel: hasAnyFuel, // Mantener compatibilidad general
+          hasFuel: hasAnyFuel,
+          fuels: fuels, // 👈 Guardamos el desglose individual por combustible
           queue: queueCountInput,
           queueLevel: calculatedLevel,
           prices: isOwner ? prices : (list[idx]?.prices || assignedStation.prices),
@@ -142,7 +148,7 @@ function AdminPage() {
       }
 
       window.dispatchEvent(new Event("storage"));
-      setSuccessMessage("¡Estado del surtidor publicado exitosamente!");
+      setSuccessMessage("¡Disponibilidad de combustibles actualizada exitosamente!");
       setTimeout(() => setSuccessMessage(""), 4000);
     }
   };
@@ -241,7 +247,7 @@ function AdminPage() {
               <p className="admin-header-desc">
                 Bienvenido, <strong>{currentUser?.name || "Usuario"}</strong> ({role}). 
                 {isWorker
-                  ? " Puedes informar si el surtidor está abierto o cerrado, actualizar stock/cola y publicar novedades."
+                  ? " Puedes informar si el surtidor está abierto o cerrado, actualizar inventario por combustible y publicar novedades."
                   : " Tienes control total de precios, estado y gestión de empleados."}
               </p>
             </div>
@@ -338,22 +344,58 @@ function AdminPage() {
                 </button>
               </div>
 
-              {/* Card 2: Stock de Combustible */}
-              <div className="control-card">
+              {/* 📍 Card 2: Inventario Independiente de Combustibles */}
+              <div className="control-card" style={{ gridColumn: "span 2" }}>
                 <div className="card-header-flex">
-                  <span className="card-category">INVENTARIO</span>
-                  <span className={`card-status-dot ${hasFuel ? "open" : "warning"}`}>
-                    {hasFuel ? "● DISPONIBLE" : "● AGOTADO"}
-                  </span>
+                  <span className="card-category">INVENTARIO INDEPENDIENTE</span>
+                  <span className="card-status-dot open">DISPONIBILIDAD POR TIPO</span>
                 </div>
-                <h3>Combustible</h3>
-                <button
-                  type="button"
-                  onClick={() => setHasFuel(!hasFuel)}
-                  className={`action-toggle-btn ${hasFuel ? "btn-fuel-on" : "btn-fuel-off"}`}
-                >
-                  {hasFuel ? "⛽ Hay Gasolina" : "⚠️ Sin Combustible"}
-                </button>
+                <h3>Regulación de Combustibles</h3>
+                <p style={{ fontSize: "0.8rem", color: "#64748b", margin: "4px 0 12px 0" }}>
+                  Activa o desactiva cada tipo de combustible según el stock actual del surtidor:
+                </p>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  {/* Gasolina Especial */}
+                  <button
+                    type="button"
+                    onClick={() => setFuels({ ...fuels, especial: !fuels.especial })}
+                    className={`action-toggle-btn ${fuels.especial ? "btn-fuel-on" : "btn-fuel-off"}`}
+                    style={{ padding: "10px", fontSize: "0.85rem" }}
+                  >
+                    {fuels.especial ? "🟢 Gasolina Especial: Hay" : "🔴 Gasolina Especial: Agotado"}
+                  </button>
+
+                  {/* Gasolina Premium */}
+                  <button
+                    type="button"
+                    onClick={() => setFuels({ ...fuels, premium: !fuels.premium })}
+                    className={`action-toggle-btn ${fuels.premium ? "btn-fuel-on" : "btn-fuel-off"}`}
+                    style={{ padding: "10px", fontSize: "0.85rem" }}
+                  >
+                    {fuels.premium ? "🟢 Gasolina Premium: Hay" : "🔴 Gasolina Premium: Agotado"}
+                  </button>
+
+                  {/* Diésel */}
+                  <button
+                    type="button"
+                    onClick={() => setFuels({ ...fuels, diesel: !fuels.diesel })}
+                    className={`action-toggle-btn ${fuels.diesel ? "btn-fuel-on" : "btn-fuel-off"}`}
+                    style={{ padding: "10px", fontSize: "0.85rem" }}
+                  >
+                    {fuels.diesel ? "🟢 Diésel: Hay" : "🔴 Diésel: Agotado"}
+                  </button>
+
+                  {/* GNV */}
+                  <button
+                    type="button"
+                    onClick={() => setFuels({ ...fuels, gnv: !fuels.gnv })}
+                    className={`action-toggle-btn ${fuels.gnv ? "btn-fuel-on" : "btn-fuel-off"}`}
+                    style={{ padding: "10px", fontSize: "0.85rem" }}
+                  >
+                    {fuels.gnv ? "🟢 GNV: Hay" : "🔴 GNV: Agotado"}
+                  </button>
+                </div>
               </div>
 
               {/* Card 3: Tráfico / Cola */}
