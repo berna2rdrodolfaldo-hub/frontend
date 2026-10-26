@@ -18,10 +18,19 @@
   --border-color: #334155;
 }
 
+/* Aplicación global del fondo y texto */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hacer que los contenedores principales y tarjetas hereden las variables */
+.dashboard, .dashboard-content, .stat-card, .summary-card, .quick-card {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  transition: all 0.3s ease;
 }
