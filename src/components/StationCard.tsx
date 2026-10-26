@@ -2,12 +2,11 @@ import { Link } from "react-router-dom";
 import "./StationCard.css";
 
 interface StationCardProps {
-  station: any; // Mantenemos 'any' para evitar conflictos si faltan propiedades en localStorage
+  station: any;
 }
 
 function StationCard({ station }: StationCardProps) {
 
-  // Obtener precios de forma segura independientemente de si vienen como objeto o propiedades sueltas
   const getPrice = (val: any, fallback: string) => {
     if (val === undefined || val === null) return fallback;
     if (typeof val === "number") return `Bs ${val.toFixed(2)}`;
@@ -31,6 +30,14 @@ function StationCard({ station }: StationCardProps) {
   const fallbackImg =
     "https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&w=600&q=80";
 
+  // Obtenemos los estados de los combustibles de forma segura con respaldo
+  const fuels = station?.fuels || {
+    especial: station?.fuel ?? true,
+    premium: station?.fuel ?? true,
+    diesel: station?.fuel ?? true,
+    gnv: station?.fuel ?? true,
+  };
+
   return (
     <Link 
       to={`/surtidores/${station?.id}`} 
@@ -39,7 +46,6 @@ function StationCard({ station }: StationCardProps) {
       <article className="station-card" style={{ cursor: "pointer" }}>
 
         <div className="station-image-wrapper">
-
           <img
             src={station?.image || fallbackImg}
             alt={station?.name || "Surtidor"}
@@ -54,89 +60,63 @@ function StationCard({ station }: StationCardProps) {
             }
           >
             <span></span>
-
-            {station?.open
-              ? "ABIERTO"
-              : "CERRADO"}
+            {station?.open ? "ABIERTO" : "CERRADO"}
           </span>
-
         </div>
 
-
         <div className="station-content">
-
           <h3>{station?.name || "Surtidor"}</h3>
 
           <span className="station-location">
             📍 {station?.location || "Ubicación no especificada"}
           </span>
 
-
           <div className="prices">
-
             <div>
               <span>Gasolina Especial</span>
-              <strong>
-                {specialPrice}
-              </strong>
+              <strong>{specialPrice}</strong>
             </div>
 
             <div>
               <span>Gasolina Premium</span>
-              <strong>
-                {premiumPrice}
-              </strong>
+              <strong>{premiumPrice}</strong>
             </div>
 
             <div>
               <span>Diésel</span>
-              <strong>
-                {dieselPrice}
-              </strong>
+              <strong>{dieselPrice}</strong>
             </div>
-
           </div>
 
+          {/* 📍 Desglose de Disponibilidad por Combustible */}
+          <div style={{ margin: "12px 0", display: "flex", flexDirection: "column", gap: "4px", fontSize: "0.8rem" }}>
+            <span style={{ fontWeight: "bold", color: "#64748b" }}>Disponibilidad:</span>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+              <span style={{ color: fuels.especial ? "#059669" : "#dc2626" }}>
+                {fuels.especial ? "🟢 Esp: Hay" : "🔴 Esp: Agotado"}
+              </span>
+              <span style={{ color: fuels.premium ? "#059669" : "#dc2626" }}>
+                {fuels.premium ? "🟢 Prem: Hay" : "🔴 Prem: Agotado"}
+              </span>
+              <span style={{ color: fuels.diesel ? "#059669" : "#dc2626" }}>
+                {fuels.diesel ? "🟢 Diésel: Hay" : "🔴 Diésel: Agotado"}
+              </span>
+              <span style={{ color: fuels.gnv ? "#059669" : "#dc2626" }}>
+                {fuels.gnv ? "🟢 GNV: Hay" : "🔴 GNV: Agotado"}
+              </span>
+            </div>
+          </div>
 
           <div className="station-details">
-
             <div className="detail">
-
               <span>🚗</span>
-
               <div>
                 <small>Cola</small>
-
                 <strong className={queueClass}>
                   {queueCount} autos
                 </strong>
               </div>
-
             </div>
-
-
-            <div className="detail">
-
-              <span>⛽</span>
-
-              <div>
-                <small>Combustible</small>
-
-                <strong
-                  className={
-                    station?.fuel
-                      ? "fuel-available"
-                      : "fuel-unavailable"
-                  }
-                >
-                  {station?.fuel
-                    ? "Disponible"
-                    : "No disponible"}
-                </strong>
-              </div>
-
-            </div>
-
           </div>
 
         </div>
