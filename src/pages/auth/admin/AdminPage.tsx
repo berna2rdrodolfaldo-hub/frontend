@@ -153,7 +153,7 @@ function AdminPage() {
     }
   };
 
-  // Agregar empleado (Solo Dueño) -> Conecta a server.js (users.json)
+  // Agregar empleado (Solo Dueño)
   const handleAddEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newWorkerName || !newWorkerCarnet || !newWorkerPassword) return;
@@ -196,7 +196,7 @@ function AdminPage() {
     }
   };
 
-  // Publicar comentario/reporte (Trabajador y Dueño)
+  // Publicar comentario/reporte
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
@@ -234,7 +234,6 @@ function AdminPage() {
       <Sidebar />
 
       <main className="admin-main-content">
-        {/* ENCABEZADO */}
         <header className="admin-header">
           <div className="admin-header-flex">
             <div>
@@ -252,7 +251,6 @@ function AdminPage() {
               </p>
             </div>
 
-            {/* MÉTRICAS */}
             <div className="admin-metrics-group">
               <div className="admin-metric-card">
                 <span className="admin-metric-label">OPERACIÓN</span>
@@ -270,14 +268,12 @@ function AdminPage() {
           </div>
         </header>
 
-        {/* NOTIFICACIÓN */}
         {successMessage && (
           <div className="save-success-banner">
             ✅ {successMessage}
           </div>
         )}
 
-        {/* BANNER DESARROLLADOR */}
         {isDev && (
           <div className="dev-banner">
             <div className="dev-banner-info">
@@ -294,7 +290,6 @@ function AdminPage() {
           </div>
         )}
 
-        {/* PESTAÑAS DE NAVEGACIÓN */}
         <div className="admin-tabs">
           <button
             onClick={() => setActiveTab("surtidor")}
@@ -320,13 +315,11 @@ function AdminPage() {
           )}
         </div>
 
-        {/* TAB 1: ESTADO OPERATIVO */}
         {activeTab === "surtidor" && (
           <section>
             <h2 className="section-title">Parámetros de Operación</h2>
 
             <div className="control-cards-grid">
-              {/* Card 1: Operatividad */}
               <div className="control-card">
                 <div className="card-header-flex">
                   <span className="card-category">OPERATIVIDAD</span>
@@ -344,7 +337,6 @@ function AdminPage() {
                 </button>
               </div>
 
-              {/* Card 2: Inventario Independiente de Combustibles */}
               <div className="control-card" style={{ gridColumn: "span 2" }}>
                 <div className="card-header-flex">
                   <span className="card-category">INVENTARIO INDEPENDIENTE</span>
@@ -356,7 +348,6 @@ function AdminPage() {
                 </p>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                  {/* Gasolina Especial */}
                   <button
                     type="button"
                     onClick={() => setFuels({ ...fuels, especial: !fuels.especial })}
@@ -366,7 +357,6 @@ function AdminPage() {
                     {fuels.especial ? "🟢 Gasolina Especial: Hay" : "🔴 Gasolina Especial: Agotado"}
                   </button>
 
-                  {/* Gasolina Premium */}
                   <button
                     type="button"
                     onClick={() => setFuels({ ...fuels, premium: !fuels.premium })}
@@ -376,7 +366,6 @@ function AdminPage() {
                     {fuels.premium ? "🟢 Gasolina Premium: Hay" : "🔴 Gasolina Premium: Agotado"}
                   </button>
 
-                  {/* Diésel */}
                   <button
                     type="button"
                     onClick={() => setFuels({ ...fuels, diesel: !fuels.diesel })}
@@ -386,7 +375,6 @@ function AdminPage() {
                     {fuels.diesel ? "🟢 Diésel: Hay" : "🔴 Diésel: Agotado"}
                   </button>
 
-                  {/* GNV */}
                   <button
                     type="button"
                     onClick={() => setFuels({ ...fuels, gnv: !fuels.gnv })}
@@ -398,7 +386,6 @@ function AdminPage() {
                 </div>
               </div>
 
-              {/* Card 3: Tráfico / Cola */}
               <div className="control-card">
                 <div className="card-header-flex">
                   <span className="card-category">TRÁFICO</span>
@@ -423,7 +410,6 @@ function AdminPage() {
                 </div>
               </div>
 
-              {/* Card 4: Precios (SOLO VISIBLE Y EDITABLE POR EL DUEÑO) */}
               {isOwner && (
                 <div className="control-card" style={{ gridColumn: "span 2" }}>
                   <div className="card-header-flex">
@@ -459,7 +445,6 @@ function AdminPage() {
                         className="queue-select"
                       />
                     </div>
-                    {/* 👇 Campo de GNV agregado para edición del dueño */}
                     <div>
                       <label style={{ fontSize: "0.75rem", fontWeight: 700 }}>GNV:</label>
                       <input
@@ -475,7 +460,6 @@ function AdminPage() {
               )}
             </div>
 
-            {/* BOTÓN DE GUARDAR ESTADO */}
             <div className="save-action-container">
               <button onClick={handleSaveChanges} className="modify-save-btn">
                 💾 Publicar Estado Operativo del Surtidor
@@ -484,7 +468,6 @@ function AdminPage() {
           </section>
         )}
 
-        {/* TAB 2: REPORTES Y NOVEDADES */}
         {activeTab === "reportes" && (
           <section className="workers-card">
             <h2 className="section-title">Publicar Novedades del Surtidor</h2>
@@ -523,7 +506,6 @@ function AdminPage() {
           </section>
         )}
 
-        {/* TAB 3: EMPLEADOS (SOLO VISIBLE PARA DUEÑO) */}
         {activeTab === "trabajadores" && isOwner && (
           <section className="workers-card">
             <h2 className="section-title">Gestión de Empleados Asignados</h2>

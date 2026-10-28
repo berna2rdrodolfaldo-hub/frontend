@@ -17,6 +17,7 @@ function StationCard({ station }: StationCardProps) {
   const specialPrice = getPrice(station?.prices?.especial ?? station?.special, "Bs 3.74");
   const premiumPrice = getPrice(station?.prices?.premium ?? station?.premium, "Bs 4.79");
   const dieselPrice = getPrice(station?.prices?.diesel ?? station?.diesel, "Bs 3.72");
+  const gnvPrice = getPrice(station?.prices?.gnv ?? station?.gnv, "Bs 2.25");
 
   const queueCount = station?.queue ?? 0;
 
@@ -30,7 +31,6 @@ function StationCard({ station }: StationCardProps) {
   const fallbackImg =
     "https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&w=600&q=80";
 
-  // Obtenemos los estados de los combustibles de forma segura con respaldo
   const fuels = station?.fuels || {
     especial: station?.fuel ?? true,
     premium: station?.fuel ?? true,
@@ -86,9 +86,13 @@ function StationCard({ station }: StationCardProps) {
               <span>Diésel</span>
               <strong>{dieselPrice}</strong>
             </div>
+
+            <div>
+              <span>GNV</span>
+              <strong>{gnvPrice}</strong>
+            </div>
           </div>
 
-          {/* 📍 Desglose de Disponibilidad por Combustible */}
           <div style={{ margin: "12px 0", display: "flex", flexDirection: "column", gap: "4px", fontSize: "0.8rem" }}>
             <span style={{ fontWeight: "bold", color: "#64748b" }}>Disponibilidad:</span>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>

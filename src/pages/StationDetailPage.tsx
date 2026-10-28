@@ -127,20 +127,19 @@ function StationDetailPage() {
             <div className="prices-grid">
               <div>
                 <span>Especial</span>
-                <strong>{station.prices?.especial || "Bs 3.74"}</strong>
+                <strong>{(station as any)?.prices?.especial || "Bs 3.74"}</strong>
               </div>
               <div>
                 <span>Premium</span>
-                <strong>{station.prices?.premium || "Bs 4.79"}</strong>
+                <strong>{(station as any)?.prices?.premium || "Bs 4.79"}</strong>
               </div>
               <div>
                 <span>Diésel</span>
-                <strong>{station.prices?.diesel || "Bs 3.72"}</strong>
+                <strong>{(station as any)?.prices?.diesel || "Bs 3.72"}</strong>
               </div>
-              {/* 👇 GNV Agregado aquí */}
               <div>
                 <span>GNV</span>
-                <strong>{station.prices?.gnv || "Bs 2.25"}</strong>
+                <strong>{(station as any)?.prices?.gnv || "Bs 2.25"}</strong>
               </div>
             </div>
           </div>
