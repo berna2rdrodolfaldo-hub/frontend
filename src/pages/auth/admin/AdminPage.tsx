@@ -34,14 +34,30 @@ function AdminPage() {
   const targetIndex = assignedStationIndex !== -1 ? assignedStationIndex : 0;
   const assignedStation = stations[targetIndex];
 
-  // Cargar datos iniciales
+  // Cargar datos iniciales asegurando GNV
   const getInitialStationData = () => {
     try {
       const stored = localStorage.getItem("sas_stations");
       if (stored) {
         const list = JSON.parse(stored);
         const match = list.find((s: any) => String(s.id) === String(assignedStation?.id));
-        if (match) return match;
+        if (match) {
+          return {
+            ...match,
+            fuels: {
+              especial: match.fuels?.especial ?? true,
+              premium: match.fuels?.premium ?? true,
+              diesel: match.fuels?.diesel ?? true,
+              gnv: match.fuels?.gnv ?? true,
+            },
+            prices: {
+              especial: match.prices?.especial || "Bs 3.74",
+              premium: match.prices?.premium || "Bs 4.79",
+              diesel: match.prices?.diesel || "Bs 3.72",
+              gnv: match.prices?.gnv || "Bs 2.25",
+            }
+          };
+        }
       }
     } catch (e) {
       console.error(e);
@@ -58,12 +74,12 @@ function AdminPage() {
     return true;
   });
 
-  // 📍 Estados independientes para cada tipo de combustible
+  // 📍 Estados independientes para cada tipo de combustible (Incluyendo GNV)
   const [fuels, setFuels] = useState({
-    especial: initialData?.fuels?.especial ?? initialData?.fuel ?? true,
-    premium: initialData?.fuels?.premium ?? initialData?.fuel ?? true,
-    diesel: initialData?.fuels?.diesel ?? initialData?.fuel ?? true,
-    gnv: initialData?.fuels?.gnv ?? initialData?.fuel ?? true,
+    especial: initialData?.fuels?.especial ?? true,
+    premium: initialData?.fuels?.premium ?? true,
+    diesel: initialData?.fuels?.diesel ?? true,
+    gnv: initialData?.fuels?.gnv ?? true,
   });
 
   // Estado para la cantidad numérica aproximada de autos
@@ -81,7 +97,7 @@ function AdminPage() {
 
   const queueLevel = getQueueLevelFromCount(queueCountInput);
 
-  // Precios (Solo editable por Dueño) - Incluyendo GNV
+  // Precios (Incluyendo GNV explícitamente)
   const [prices, setPrices] = useState({
     especial: initialData?.prices?.especial || "Bs 3.74",
     premium: initialData?.prices?.premium || "Bs 4.79",
@@ -132,7 +148,7 @@ function AdminPage() {
           fuels: fuels,
           queue: queueCountInput,
           queueLevel: calculatedLevel,
-          prices: isOwner ? prices : (list[idx]?.prices || assignedStation.prices),
+          prices: isOwner ? prices : (list[idx]?.prices || assignedStation.prices || { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72", gnv: "Bs 2.25" }),
           comments: commentsList,
         };
 
@@ -148,7 +164,7 @@ function AdminPage() {
       }
 
       window.dispatchEvent(new Event("storage"));
-      setSuccessMessage("¡Disponibilidad y precios actualizados exitosamente!");
+      setSuccessMessage("¡Disponibilidad y precios de GNV actualizados exitosamente!");
       setTimeout(() => setSuccessMessage(""), 4000);
     }
   };
@@ -188,7 +204,7 @@ function AdminPage() {
       setNewWorkerCarnet("");
       setNewWorkerPassword("");
 
-      setSuccessMessage(`Empleado ${createdWorker.name} guardado en users.json exitosamente.`);
+      setSuccessMessage(`Empleado ${createdWorker.name} guardado exitosamente.`);
       setTimeout(() => setSuccessMessage(""), 4000);
     } catch (error) {
       console.error(error);
@@ -245,9 +261,6 @@ function AdminPage() {
               </h1>
               <p className="admin-header-desc">
                 Bienvenido, <strong>{currentUser?.name || "Usuario"}</strong> ({role}). 
-                {isWorker
-                  ? " Puedes informar si el surtidor está abierto o cerrado, actualizar inventario por combustible y publicar novedades."
-                  : " Tienes control total de precios, estado y gestión de empleados."}
               </p>
             </div>
 
@@ -342,7 +355,7 @@ function AdminPage() {
                   <span className="card-category">INVENTARIO INDEPENDIENTE</span>
                   <span className="card-status-dot open">DISPONIBILIDAD POR TIPO</span>
                 </div>
-                <h3>Regulación de Combustibles</h3>
+                <h3>Regulación de Combustibles y GNV</h3>
                 <p style={{ fontSize: "0.8rem", color: "#64748b", margin: "4px 0 12px 0" }}>
                   Activa o desactiva cada tipo de combustible según el stock actual del surtidor:
                 </p>
@@ -404,9 +417,6 @@ function AdminPage() {
                     className="queue-select"
                     placeholder="Ej. 12"
                   />
-                  <span style={{ fontSize: "0.8rem", color: "#64748b" }}>
-                    Estado automático: <strong>{queueLevel}</strong> ({queueLevel === "BAJA" ? "Pocos vehículos" : queueLevel === "MEDIA" ? "Moderado" : "Congestionado"})
-                  </span>
                 </div>
               </div>
 
@@ -416,7 +426,7 @@ function AdminPage() {
                     <span className="card-category">TARIFAS (EXCLUSIVO DUEÑO)</span>
                     <span className="card-status-dot open">PRECIOS ACTUALES</span>
                   </div>
-                  <h3>Precios Oficiales</h3>
+                  <h3>Precios Oficiales (Incluyendo GNV)</h3>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "10px", marginTop: "10px" }}>
                     <div>
                       <label style={{ fontSize: "0.75rem", fontWeight: 700 }}>Especial:</label>
@@ -462,7 +472,7 @@ function AdminPage() {
 
             <div className="save-action-container">
               <button onClick={handleSaveChanges} className="modify-save-btn">
-                💾 Publicar Estado Operativo del Surtidor
+                💾 Publicar Estado Operativo y Precios del Surtidor
               </button>
             </div>
           </section>
@@ -471,12 +481,10 @@ function AdminPage() {
         {activeTab === "reportes" && (
           <section className="workers-card">
             <h2 className="section-title">Publicar Novedades del Surtidor</h2>
-            <p className="workers-desc">Los comentarios publicados aquí aparecerán en la vista oficial del surtidor.</p>
-
             <form onSubmit={handleAddComment} style={{ marginBottom: "24px", display: "flex", gap: "10px" }}>
               <input
                 type="text"
-                placeholder="Escribe una novedad (ej. Cisterna de diésel recién llegada, atención rápida...)"
+                placeholder="Escribe una novedad..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 className="queue-select"
@@ -509,10 +517,6 @@ function AdminPage() {
         {activeTab === "trabajadores" && isOwner && (
           <section className="workers-card">
             <h2 className="section-title">Gestión de Empleados Asignados</h2>
-            <p className="workers-desc">
-              Añade trabajadores que se guardarán directamente en `users.json`.
-            </p>
-
             <form onSubmit={handleAddEmployee} style={{ backgroundColor: "#f8fafc", padding: "18px", borderRadius: "12px", border: "1px solid #e2e8f0", marginBottom: "24px" }}>
               <h3 style={{ margin: "0 0 12px 0", fontSize: "0.95rem" }}>➕ Registrar Nuevo Empleado</h3>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "10px", alignItems: "end" }}>
