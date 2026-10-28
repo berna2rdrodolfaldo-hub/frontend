@@ -165,9 +165,9 @@ function AdminPage() {
         console.error("Error al guardar en localStorage", e);
       }
 
-      // 👇 Sincronización automática con el servidor backend desplegado en Render
+      // 👇 Sincronización automática con el servidor backend desplegado en Render (URL definitiva)
       try {
-        await fetch(`https://frontend-dbgmqvf73r2c73a5le50.onrender.com/api/stations/${assignedStation.id}`, {
+        await fetch(`https://frontend-9rgm.onrender.com/api/stations/${assignedStation.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedData),
@@ -197,7 +197,7 @@ function AdminPage() {
     };
 
     try {
-      const response = await fetch("https://frontend-dbgmqvf73r2c73a5le50.onrender.com/api/users", {
+      const response = await fetch("https://frontend-9rgm.onrender.com/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEmp),

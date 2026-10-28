@@ -9,11 +9,11 @@ function StationsPage() {
   const [filter, setFilter] = useState("todos");
   const [stations, setStations] = useState<any[]>(initialStations);
 
-  // Cargar datos desde el servidor en Render al iniciar la página
+  // Cargar datos desde el servidor definitivo en Render al iniciar la página
   useEffect(() => {
     const fetchStationsFromCloud = async () => {
       try {
-        const response = await fetch("https://frontend-dbgmqvf73r2c73a5le50.onrender.com/api/stations");
+        const response = await fetch(`https://frontend-9rgm.onrender.com/api/stations?t=${Date.now()}`);
         if (response.ok) {
           const cloudStations = await response.json();
           if (Array.isArray(cloudStations) && cloudStations.length > 0) {
