@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 const usersFilePath = './src/data/users.json';
-const stationsFilePath = './src/data/stations-server.json'; // 👈 Archivo nuevo en el servidor para los surtidores
+const stationsFilePath = './src/data/stations-server.json'; // Archivo en el servidor para los surtidores
 
 // --- RUTAS DE USUARIOS ---
 
@@ -54,9 +54,8 @@ app.post('/api/users', (req, res) => {
 });
 
 
-// --- NUEVAS RUTAS DE SURTIDORES (Para sincronizar precios en la nube/servidor) ---
+// --- RUTAS DE SURTIDORES (Sincronización en la nube) ---
 
-// Obtener todos los surtidores modificados
 app.get('/api/stations', (req, res) => {
   if (!fs.existsSync(stationsFilePath)) {
     return res.json([]); // Si no existe aún, devuelve array vacío
@@ -73,7 +72,6 @@ app.get('/api/stations', (req, res) => {
   });
 });
 
-// Actualizar o guardar un surtidor específico (Precios, stock, etc.)
 app.put('/api/stations/:id', (req, res) => {
   const stationId = req.params.id;
   const updatedStation = req.body;
@@ -87,10 +85,7 @@ app.put('/api/stations/:id', (req, res) => {
         stationsList = [];
       }
     }
-    const PORT = process.env.PORT || 3001;
-    app.listen(PORT, () => {
-      console.log(`Servidor corriendo en puerto ${PORT}`);
-    });
+
     const index = stationsList.findIndex((s) => String(s.id) === String(stationId));
     if (index !== -1) {
       stationsList[index] = updatedStation;
@@ -108,6 +103,8 @@ app.put('/api/stations/:id', (req, res) => {
   });
 });
 
-app.listen(3001, () => {
-  console.log('🚀 Servidor backend ejecutándose en http://localhost:3001');
+// Puerto dinámico compatible con Render y entorno local
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor backend ejecutándose en el puerto ${PORT}`);
 });
