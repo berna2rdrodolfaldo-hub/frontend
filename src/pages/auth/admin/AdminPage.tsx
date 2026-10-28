@@ -17,7 +17,7 @@ function AdminPage() {
   const role = String(rawRole).toUpperCase().trim();
   const isDev = role === "DEVELOPER" || role === "DEV";
   const isOwner = role === "DUENO" || role === "ADMIN" || isDev;
-  const isWorker = role === "TRABAJADOR";
+  const isWorker = role === "TRABAJADOR"; // 👈 Aquí se usa activamente
 
   // Formulario para agregar trabajador (Solo Dueño)
   const [newWorkerName, setNewWorkerName] = useState("");
@@ -254,13 +254,14 @@ function AdminPage() {
           <div className="admin-header-flex">
             <div>
               <span className="admin-header-tag">
-                {isOwner ? "👑 PANEL DE DUEÑO" : "👷 PANEL DE TRABAJADOR"}
+                {isOwner ? "👑 PANEL DE DUEÑO" : isWorker ? "👷 PANEL DE TRABAJADOR" : "⚙️ PANEL OPERATIVO"}
               </span>
               <h1 className="admin-header-title">
                 {assignedStation?.name || "Surtidor Asignado"} ⛽
               </h1>
               <p className="admin-header-desc">
                 Bienvenido, <strong>{currentUser?.name || "Usuario"}</strong> ({role}). 
+                {isWorker && " Panel operativo optimizado para control rápido de stock de GNV y combustibles."}
               </p>
             </div>
 
