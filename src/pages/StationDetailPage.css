@@ -113,11 +113,11 @@
 }
 
 .prices-grid {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 👈 Asegúrate de que sean 4 columnas y no 3 */
+  gap: 10px;
+  margin-top: 10px;
 }
-
 .prices-grid div {
   text-align: center;
 }
