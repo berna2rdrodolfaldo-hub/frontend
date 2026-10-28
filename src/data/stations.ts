@@ -40,7 +40,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: true, diesel: true, gnv: false },
     queue: 8,
-    image: "https://images.unsplash.com/photo-1707643824892-c326ef1688a6?w=500&auto=format&fit=crop&q=60",
+    image: "/Imagenes/tejar.jpg",
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -52,7 +52,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: false, diesel: true, gnv: true },
     queue: 15,
-    image: "https://images.unsplash.com/photo-1707960190027-817be78594f8?w=500&auto=format&fit=crop&q=60",
+    image: "/Imagenes/ostriagutierres.jpg",
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -64,7 +64,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: true, diesel: false, gnv: true },
     queue: 22,
-    image: "https://images.unsplash.com/photo-1615226882893-17520863eb04?w=500&auto=format&fit=crop&q=60",
+    image: "/Imagenes/sanantonio.jpg",
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -76,7 +76,7 @@ export const stations: Station[] = [
     fuel: false,
     fuels: { especial: false, premium: false, diesel: false, gnv: false },
     queue: 10,
-    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=500&auto=format&fit=crop&q=60",
+    image: "/Imagenes/nayler.jpg",
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -88,7 +88,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: false, diesel: true, gnv: false },
     queue: 5,
-    image: "https://images.unsplash.com/photo-1527018601619-a508a2be00cd?w=500&auto=format&fit=crop&q=60",
+    image: "/Imagenes/juanazurduy.jpg",
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -100,7 +100,7 @@ export const stations: Station[] = [
     fuel: false,
     fuels: { especial: false, premium: false, diesel: false, gnv: false },
     queue: 0,
-    image: "https://images.unsplash.com/photo-1508873696983-2df515122519?w=500&auto=format&fit=crop&q=60",
+    image: "/Imagenes/oqharikuna.jpg",
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -112,7 +112,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: true, diesel: true, gnv: true },
     queue: 12,
-    image: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=500&auto=format&fit=crop&q=60",
+    image: "/Imagenes/trebol.jpg",
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -124,7 +124,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: false, premium: true, diesel: true, gnv: false },
     queue: 18,
-    image: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f?w=500&auto=format&fit=crop&q=60",
+    image: "/Imagenes/elmorro.jpg",
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   }
