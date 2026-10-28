@@ -1,3 +1,12 @@
+import tejarImg from "../Imagenes/tejar.jpg";
+import ostriaImg from "../Imagenes/ostriagutierres.jpg";
+import sanAntonioImg from "../Imagenes/sanantonio.jpg";
+import naylerImg from "../Imagenes/nayler.jpg";
+import juanaImg from "../Imagenes/juanazurduy.jpg";
+import oqharikunaImg from "../Imagenes/oqharikuna.jpg";
+import trebolImg from "../Imagenes/trebol.jpg";
+import elmorroImg from "../Imagenes/elmorro.jpg";
+
 export interface Comment {
   id: string;
   userName: string;
@@ -40,7 +49,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: true, diesel: true, gnv: false },
     queue: 8,
-    image: "/Imagenes/tejar.jpg",
+    image: tejarImg,
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -52,7 +61,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: false, diesel: true, gnv: true },
     queue: 15,
-    image: "/Imagenes/ostriagutierres.jpg",
+    image: ostriaImg,
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -64,7 +73,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: true, diesel: false, gnv: true },
     queue: 22,
-    image: "/Imagenes/sanantonio.jpg",
+    image: sanAntonioImg,
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -76,7 +85,7 @@ export const stations: Station[] = [
     fuel: false,
     fuels: { especial: false, premium: false, diesel: false, gnv: false },
     queue: 10,
-    image: "/Imagenes/nayler.jpg",
+    image: naylerImg,
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -88,7 +97,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: false, diesel: true, gnv: false },
     queue: 5,
-    image: "/Imagenes/juanazurduy.jpg",
+    image: juanaImg,
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -100,7 +109,7 @@ export const stations: Station[] = [
     fuel: false,
     fuels: { especial: false, premium: false, diesel: false, gnv: false },
     queue: 0,
-    image: "/Imagenes/oqharikuna.jpg",
+    image: oqharikunaImg,
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -112,7 +121,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: true, premium: true, diesel: true, gnv: true },
     queue: 12,
-    image: "/Imagenes/trebol.jpg",
+    image: trebolImg,
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   },
@@ -124,7 +133,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: false, premium: true, diesel: true, gnv: false },
     queue: 18,
-    image: "/Imagenes/elmorro.jpg",
+    image: elmorroImg,
     prices: { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72" },
     comments: []
   }
