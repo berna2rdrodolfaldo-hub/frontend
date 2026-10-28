@@ -7,35 +7,52 @@ import "./StationsPage.css";
 function StationsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("todos");
+  const [stations, setStations] = useState<any[]>(initialStations);
 
-  // Cargar datos garantizando la migración a los surtidores reales de Sucre
-  const [stations, setStations] = useState(() => {
-    try {
-      const saved = localStorage.getItem("sas_stations");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-
-        // Detecta si en el navegador persiste la lista desactualizada
-        const hasLegacyData = parsed.some((s: any) => 
-          s.name === "Surtidor Central" || s.name === "Surtidor Norte"
-        );
-
-        if (hasLegacyData) {
-          // Limpia los datos desactualizados y carga los surtidores reales de Sucre
-          localStorage.setItem("sas_stations", JSON.stringify(initialStations));
-          return initialStations;
+  // Cargar datos desde el servidor en Render al iniciar la página
+  useEffect(() => {
+    const fetchStationsFromCloud = async () => {
+      try {
+        const response = await fetch("https://frontend-dbgmqvf73r2c73a5le50.onrender.com/api/stations");
+        if (response.ok) {
+          const cloudStations = await response.json();
+          if (Array.isArray(cloudStations) && cloudStations.length > 0) {
+            setStations(cloudStations);
+            // Actualizar también el almacenamiento local como respaldo
+            localStorage.setItem("sas_stations", JSON.stringify(cloudStations));
+            return;
+          }
         }
-
-        return parsed;
+      } catch (error) {
+        console.warn("No se pudo conectar al servidor de Render, usando respaldo local:", error);
       }
-    } catch (e) {
-      console.error("Error al recuperar datos de estaciones", e);
-    }
-    
-    // Guardar por defecto si es la primera lectura
-    localStorage.setItem("sas_stations", JSON.stringify(initialStations));
-    return initialStations;
-  });
+
+      // Fallback a localStorage si falla la red
+      try {
+        const saved = localStorage.getItem("sas_stations");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          const hasLegacyData = parsed.some((s: any) => 
+            s.name === "Surtidor Central" || s.name === "Surtidor Norte"
+          );
+          if (hasLegacyData) {
+            localStorage.setItem("sas_stations", JSON.stringify(initialStations));
+            setStations(initialStations);
+          } else {
+            setStations(parsed);
+          }
+        } else {
+          localStorage.setItem("sas_stations", JSON.stringify(initialStations));
+          setStations(initialStations);
+        }
+      } catch (e) {
+        console.error("Error al recuperar datos locales", e);
+        setStations(initialStations);
+      }
+    };
+
+    fetchStationsFromCloud();
+  }, []);
 
   // Escuchar cambios guardados desde el Panel Admin o en otras pestañas
   useEffect(() => {
