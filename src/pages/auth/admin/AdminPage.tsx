@@ -17,7 +17,7 @@ function AdminPage() {
   const role = String(rawRole).toUpperCase().trim();
   const isDev = role === "DEVELOPER" || role === "DEV";
   const isOwner = role === "DUENO" || role === "ADMIN" || isDev;
-  const isWorker = role === "TRABAJADOR"; // 👈 Aquí se usa activamente
+  const isWorker = role === "TRABAJADOR";
 
   // Formulario para agregar trabajador (Solo Dueño)
   const [newWorkerName, setNewWorkerName] = useState("");
@@ -34,7 +34,7 @@ function AdminPage() {
   const targetIndex = assignedStationIndex !== -1 ? assignedStationIndex : 0;
   const assignedStation = stations[targetIndex];
 
-  // Cargar datos iniciales asegurando GNV
+  // Cargar datos iniciales garantizando persistencia de precios y GNV
   const getInitialStationData = () => {
     try {
       const stored = localStorage.getItem("sas_stations");
@@ -51,10 +51,10 @@ function AdminPage() {
               gnv: match.fuels?.gnv ?? true,
             },
             prices: {
-              especial: match.prices?.especial || "Bs 3.74",
-              premium: match.prices?.premium || "Bs 4.79",
-              diesel: match.prices?.diesel || "Bs 3.72",
-              gnv: match.prices?.gnv || "Bs 2.25",
+              especial: match.prices?.especial || assignedStation?.prices?.especial || "Bs 3.74",
+              premium: match.prices?.premium || assignedStation?.prices?.premium || "Bs 4.79",
+              diesel: match.prices?.diesel || assignedStation?.prices?.diesel || "Bs 3.72",
+              gnv: match.prices?.gnv || assignedStation?.prices?.gnv || "Bs 2.25",
             }
           };
         }
@@ -74,7 +74,7 @@ function AdminPage() {
     return true;
   });
 
-  // 📍 Estados independientes para cada tipo de combustible (Incluyendo GNV)
+  // 📍 Estados independientes para cada tipo de combustible
   const [fuels, setFuels] = useState({
     especial: initialData?.fuels?.especial ?? true,
     premium: initialData?.fuels?.premium ?? true,
@@ -97,7 +97,7 @@ function AdminPage() {
 
   const queueLevel = getQueueLevelFromCount(queueCountInput);
 
-  // Precios (Incluyendo GNV explícitamente)
+  // Precios persistentes asegurados
   const [prices, setPrices] = useState({
     especial: initialData?.prices?.especial || "Bs 3.74",
     premium: initialData?.prices?.premium || "Bs 4.79",
@@ -127,7 +127,7 @@ function AdminPage() {
     }
   }, [assignedStation?.id, isOwner]);
 
-  // Guardar modificaciones operativas
+  // Guardar modificaciones operativas y precios de forma persistente
   const handleSaveChanges = () => {
     if (assignedStation) {
       const calculatedLevel = getQueueLevelFromCount(queueCountInput);
@@ -138,8 +138,10 @@ function AdminPage() {
         let list = storedStations ? JSON.parse(storedStations) : [...stations];
         const idx = list.findIndex((s: any) => String(s.id) === String(assignedStation.id));
 
+        const existingItem = idx !== -1 ? list[idx] : assignedStation;
+
         const updatedData = {
-          ...(list[idx] || assignedStation),
+          ...existingItem,
           open: isOpen,
           isOpen: isOpen,
           status: isOpen ? "Abierto" : "Cerrado",
@@ -148,7 +150,8 @@ function AdminPage() {
           fuels: fuels,
           queue: queueCountInput,
           queueLevel: calculatedLevel,
-          prices: isOwner ? prices : (list[idx]?.prices || assignedStation.prices || { especial: "Bs 3.74", premium: "Bs 4.79", diesel: "Bs 3.72", gnv: "Bs 2.25" }),
+          // 👇 Aquí garantizamos que si es dueño guarde sus nuevos precios, y si no, conserve los existentes sin pisarlos
+          prices: isOwner ? prices : (existingItem?.prices || prices),
           comments: commentsList,
         };
 
@@ -164,7 +167,7 @@ function AdminPage() {
       }
 
       window.dispatchEvent(new Event("storage"));
-      setSuccessMessage("¡Disponibilidad y precios de GNV actualizados exitosamente!");
+      setSuccessMessage("¡Precios y estado del surtidor guardados exitosamente!");
       setTimeout(() => setSuccessMessage(""), 4000);
     }
   };
@@ -427,7 +430,7 @@ function AdminPage() {
                     <span className="card-category">TARIFAS (EXCLUSIVO DUEÑO)</span>
                     <span className="card-status-dot open">PRECIOS ACTUALES</span>
                   </div>
-                  <h3>Precios Oficiales (Incluyendo GNV)</h3>
+                  <h3>Precios Oficiales (Diésel, Gasolina y GNV)</h3>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "10px", marginTop: "10px" }}>
                     <div>
                       <label style={{ fontSize: "0.75rem", fontWeight: 700 }}>Especial:</label>

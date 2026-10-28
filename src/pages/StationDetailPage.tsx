@@ -7,6 +7,7 @@ import "./StationDetailPage.css";
 function StationDetailPage() {
   const { id } = useParams<{ id: string }>();
 
+  // Función robusta para leer siempre los precios actualizados del localStorage
   const loadStation = (): Station | null => {
     try {
       const saved = localStorage.getItem("sas_stations");
@@ -14,7 +15,7 @@ function StationDetailPage() {
       const found = list.find((s) => String(s.id) === String(id));
       if (!found) return null;
 
-      // Inyección defensiva garantizada de GNV si el objeto parseado no lo traía
+      // Inyección defensiva garantizada de combustibles y precios persistentes
       return {
         ...found,
         fuels: {
@@ -130,7 +131,7 @@ function StationDetailPage() {
             </p>
           </div>
 
-          {/* Card 3: Tarifas de Combustibles (4 Columnas) */}
+          {/* Card 3: Tarifas de Combustibles (Persistentes) */}
           <div className="info-card prices-card">
             <span className="info-card-label">TARIFAS OFICIALES</span>
             <div className="prices-grid">
