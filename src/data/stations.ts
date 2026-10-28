@@ -1,11 +1,11 @@
-import tejarImg from "../Imagenes/tejar.jpg";
-import ostriaImg from "../Imagenes/ostriagutierres.jpg";
-import sanAntonioImg from "../Imagenes/sanantonio.jpg";
-import naylerImg from "../Imagenes/nayler.jpg";
-import juanaImg from "../Imagenes/juanazurduy.jpg";
-import oqharikunaImg from "../Imagenes/oqharikuna.jpg";
-import trebolImg from "../Imagenes/trebol.jpg";
-import elmorroImg from "../Imagenes/elmorro.jpg";
+import tejarImg from "../Imagenes/tejar.png";
+import ostriaImg from "../Imagenes/ostriagutierres.png";
+import sanAntonioImg from "../Imagenes/sanantonio.png";
+import naylerImg from "../Imagenes/nayler.png";
+import juanaImg from "../Imagenes/juanazurduy.png";
+import oqharikunaImg from "../Imagenes/oqharikuna.png";
+import trebolImg from "../Imagenes/trebol.png";
+import elmorroImg from "../Imagenes/elmorro.png";
 
 export interface Comment {
   id: string;
