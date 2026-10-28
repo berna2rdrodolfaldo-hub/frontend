@@ -81,11 +81,12 @@ function AdminPage() {
 
   const queueLevel = getQueueLevelFromCount(queueCountInput);
 
-  // Precios (Solo editable por Dueño)
+  // Precios (Solo editable por Dueño) - Incluyendo GNV
   const [prices, setPrices] = useState({
     especial: initialData?.prices?.especial || "Bs 3.74",
     premium: initialData?.prices?.premium || "Bs 4.79",
     diesel: initialData?.prices?.diesel || "Bs 3.72",
+    gnv: initialData?.prices?.gnv || "Bs 2.25",
   });
 
   const [commentsList, setCommentsList] = useState<any[]>(initialData?.comments || []);
@@ -114,7 +115,6 @@ function AdminPage() {
   const handleSaveChanges = () => {
     if (assignedStation) {
       const calculatedLevel = getQueueLevelFromCount(queueCountInput);
-      // Determinamos si hay al menos un combustible disponible para mantener compatibilidad general
       const hasAnyFuel = Object.values(fuels).some(Boolean);
 
       try {
@@ -127,9 +127,9 @@ function AdminPage() {
           open: isOpen,
           isOpen: isOpen,
           status: isOpen ? "Abierto" : "Cerrado",
-          fuel: hasAnyFuel, // Mantener compatibilidad general
+          fuel: hasAnyFuel,
           hasFuel: hasAnyFuel,
-          fuels: fuels, // 👈 Guardamos el desglose individual por combustible
+          fuels: fuels,
           queue: queueCountInput,
           queueLevel: calculatedLevel,
           prices: isOwner ? prices : (list[idx]?.prices || assignedStation.prices),
@@ -148,7 +148,7 @@ function AdminPage() {
       }
 
       window.dispatchEvent(new Event("storage"));
-      setSuccessMessage("¡Disponibilidad de combustibles actualizada exitosamente!");
+      setSuccessMessage("¡Disponibilidad y precios actualizados exitosamente!");
       setTimeout(() => setSuccessMessage(""), 4000);
     }
   };
@@ -344,7 +344,7 @@ function AdminPage() {
                 </button>
               </div>
 
-              {/* 📍 Card 2: Inventario Independiente de Combustibles */}
+              {/* Card 2: Inventario Independiente de Combustibles */}
               <div className="control-card" style={{ gridColumn: "span 2" }}>
                 <div className="card-header-flex">
                   <span className="card-category">INVENTARIO INDEPENDIENTE</span>
@@ -431,7 +431,7 @@ function AdminPage() {
                     <span className="card-status-dot open">PRECIOS ACTUALES</span>
                   </div>
                   <h3>Precios Oficiales</h3>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginTop: "10px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "10px", marginTop: "10px" }}>
                     <div>
                       <label style={{ fontSize: "0.75rem", fontWeight: 700 }}>Especial:</label>
                       <input
@@ -457,6 +457,17 @@ function AdminPage() {
                         value={prices.diesel}
                         onChange={(e) => setPrices({ ...prices, diesel: e.target.value })}
                         className="queue-select"
+                      />
+                    </div>
+                    {/* 👇 Campo de GNV agregado para edición del dueño */}
+                    <div>
+                      <label style={{ fontSize: "0.75rem", fontWeight: 700 }}>GNV:</label>
+                      <input
+                        type="text"
+                        value={prices.gnv}
+                        onChange={(e) => setPrices({ ...prices, gnv: e.target.value })}
+                        className="queue-select"
+                        placeholder="Ej. Bs 2.25"
                       />
                     </div>
                   </div>

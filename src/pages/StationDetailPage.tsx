@@ -137,6 +137,11 @@ function StationDetailPage() {
                 <span>Diésel</span>
                 <strong>{station.prices?.diesel || "Bs 3.72"}</strong>
               </div>
+              {/* 👇 GNV Agregado aquí */}
+              <div>
+                <span>GNV</span>
+                <strong>{station.prices?.gnv || "Bs 2.25"}</strong>
+              </div>
             </div>
           </div>
         </div>
