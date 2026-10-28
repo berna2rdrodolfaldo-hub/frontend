@@ -127,33 +127,32 @@ function AdminPage() {
     }
   }, [assignedStation?.id, isOwner]);
 
-  // Guardar modificaciones operativas y precios de forma persistente
-  const handleSaveChanges = () => {
+  // Guardar modificaciones operativas y precios de forma persistente (LocalStorage + Servidor en la nube Render)
+  const handleSaveChanges = async () => {
     if (assignedStation) {
       const calculatedLevel = getQueueLevelFromCount(queueCountInput);
       const hasAnyFuel = Object.values(fuels).some(Boolean);
+
+      const existingItem = initialData || assignedStation;
+
+      const updatedData = {
+        ...existingItem,
+        open: isOpen,
+        isOpen: isOpen,
+        status: isOpen ? "Abierto" : "Cerrado",
+        fuel: hasAnyFuel,
+        hasFuel: hasAnyFuel,
+        fuels: fuels,
+        queue: queueCountInput,
+        queueLevel: calculatedLevel,
+        prices: isOwner ? prices : (existingItem?.prices || prices),
+        comments: commentsList,
+      };
 
       try {
         const storedStations = localStorage.getItem("sas_stations");
         let list = storedStations ? JSON.parse(storedStations) : [...stations];
         const idx = list.findIndex((s: any) => String(s.id) === String(assignedStation.id));
-
-        const existingItem = idx !== -1 ? list[idx] : assignedStation;
-
-        const updatedData = {
-          ...existingItem,
-          open: isOpen,
-          isOpen: isOpen,
-          status: isOpen ? "Abierto" : "Cerrado",
-          fuel: hasAnyFuel,
-          hasFuel: hasAnyFuel,
-          fuels: fuels,
-          queue: queueCountInput,
-          queueLevel: calculatedLevel,
-          // 👇 Aquí garantizamos que si es dueño guarde sus nuevos precios, y si no, conserve los existentes sin pisarlos
-          prices: isOwner ? prices : (existingItem?.prices || prices),
-          comments: commentsList,
-        };
 
         if (idx !== -1) {
           list[idx] = updatedData;
@@ -166,13 +165,24 @@ function AdminPage() {
         console.error("Error al guardar en localStorage", e);
       }
 
+      // 👇 Sincronización automática con el servidor backend desplegado en Render
+      try {
+        await fetch(`https://frontend-dbgmqvf73r2c73a5le50.onrender.com/api/stations/${assignedStation.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedData),
+        });
+      } catch (err) {
+        console.warn("Servidor backend en Render no disponible temporalmente:", err);
+      }
+
       window.dispatchEvent(new Event("storage"));
-      setSuccessMessage("¡Precios y estado del surtidor guardados exitosamente!");
+      setSuccessMessage("¡Precios y estado del surtidor guardados y sincronizados globalmente!");
       setTimeout(() => setSuccessMessage(""), 4000);
     }
   };
 
-  // Agregar empleado (Solo Dueño)
+  // Agregar empleado (Solo Dueño) con conexión a Render
   const handleAddEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newWorkerName || !newWorkerCarnet || !newWorkerPassword) return;
@@ -187,7 +197,7 @@ function AdminPage() {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/api/users", {
+      const response = await fetch("https://frontend-dbgmqvf73r2c73a5le50.onrender.com/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEmp),
@@ -211,12 +221,12 @@ function AdminPage() {
       setTimeout(() => setSuccessMessage(""), 4000);
     } catch (error) {
       console.error(error);
-      alert("Error al guardar el trabajador. Asegúrate de tener ejecutándose 'node server.js'.");
+      alert("Error al guardar el trabajador en el servidor de Render.");
     }
   };
 
   // Publicar comentario/reporte
-  const handleAddComment = (e: React.FormEvent) => {
+  const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
@@ -230,7 +240,7 @@ function AdminPage() {
     const updatedComments = [commentObj, ...commentsList];
     setCommentsList(updatedComments);
     setNewComment("");
-
+    
     try {
       const storedStations = localStorage.getItem("sas_stations");
       let list = storedStations ? JSON.parse(storedStations) : [...stations];
@@ -517,7 +527,7 @@ function AdminPage() {
             </div>
           </section>
         )}
-
+        
         {activeTab === "trabajadores" && isOwner && (
           <section className="workers-card">
             <h2 className="section-title">Gestión de Empleados Asignados</h2>

@@ -6,11 +6,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const filePath = './src/data/users.json';
+const usersFilePath = './src/data/users.json';
+const stationsFilePath = './src/data/stations-server.json'; // 👈 Archivo nuevo en el servidor para los surtidores
 
-// Ruta GET para obtener los usuarios
+// --- RUTAS DE USUARIOS ---
+
 app.get('/api/users', (req, res) => {
-  fs.readFile(filePath, 'utf8', (err, data) => {
+  fs.readFile(usersFilePath, 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       return res.status(500).send('Error al leer el archivo users.json');
@@ -24,11 +26,10 @@ app.get('/api/users', (req, res) => {
   });
 });
 
-// Ruta POST para agregar un nuevo usuario o trabajador
 app.post('/api/users', (req, res) => {
   const newUser = req.body;
 
-  fs.readFile(filePath, 'utf8', (err, data) => {
+  fs.readFile(usersFilePath, 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       return res.status(500).send('Error al leer el archivo users.json');
@@ -39,7 +40,7 @@ app.post('/api/users', (req, res) => {
       newUser.id = String(Date.now());
       users.push(newUser);
 
-      fs.writeFile(filePath, JSON.stringify(users, null, 2), (writeErr) => {
+      fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), (writeErr) => {
         if (writeErr) {
           console.error(writeErr);
           return res.status(500).send('Error al escribir en users.json');
@@ -52,6 +53,61 @@ app.post('/api/users', (req, res) => {
   });
 });
 
+
+// --- NUEVAS RUTAS DE SURTIDORES (Para sincronizar precios en la nube/servidor) ---
+
+// Obtener todos los surtidores modificados
+app.get('/api/stations', (req, res) => {
+  if (!fs.existsSync(stationsFilePath)) {
+    return res.json([]); // Si no existe aún, devuelve array vacío
+  }
+  fs.readFile(stationsFilePath, 'utf8', (err, data) => {
+    if (err) {
+      return res.status(500).send('Error al leer el archivo de surtidores');
+    }
+    try {
+      res.json(JSON.parse(data));
+    } catch (e) {
+      res.status(500).send('Error al parsear surtidores');
+    }
+  });
+});
+
+// Actualizar o guardar un surtidor específico (Precios, stock, etc.)
+app.put('/api/stations/:id', (req, res) => {
+  const stationId = req.params.id;
+  const updatedStation = req.body;
+
+  fs.readFile(stationsFilePath, 'utf8', (err, data) => {
+    let stationsList = [];
+    if (!err && data) {
+      try {
+        stationsList = JSON.parse(data);
+      } catch (e) {
+        stationsList = [];
+      }
+    }
+    const PORT = process.env.PORT || 3001;
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en puerto ${PORT}`);
+    });
+    const index = stationsList.findIndex((s) => String(s.id) === String(stationId));
+    if (index !== -1) {
+      stationsList[index] = updatedStation;
+    } else {
+      stationsList.push(updatedStation);
+    }
+
+    fs.writeFile(stationsFilePath, JSON.stringify(stationsList, null, 2), (writeErr) => {
+      if (writeErr) {
+        console.error(writeErr);
+        return res.status(500).send('Error al guardar el surtidor');
+      }
+      res.json(updatedStation);
+    });
+  });
+});
+
 app.listen(3001, () => {
-  console.log('🚀 Servidor de usuarios ejecutándose en http://localhost:3001');
+  console.log('🚀 Servidor backend ejecutándose en http://localhost:3001');
 });
