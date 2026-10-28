@@ -450,3 +450,10 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(16, 185, 129, 0.45);
 }
+
+/* Asegurar soporte responsivo para la grilla de 4 precios del panel admin */
+@media (max-width: 900px) {
+  .control-card div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
