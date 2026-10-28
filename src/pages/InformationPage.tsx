@@ -1,6 +1,6 @@
 import Sidebar from "../components/Sidebar";
 import "./InformationPage.css";
-import surtidorImg from "../Imagenes/surtidor-principal.jpg";
+import surtidorImg from "../Imagenes/surtidor-principal.png";
 
 function InformationPage() {
   return (
