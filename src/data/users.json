@@ -1,12 +1,5 @@
 [
   {
-    "id": "dev-master",
-    "name": "Desarrollador Principal",
-    "carnet": "000000",
-    "password": "dev123",
-    "role": "DEVELOPER"
-  },
-  {
     "id": "user-1",
     "name": "Admin Tejar",
     "carnet": "1234567",
