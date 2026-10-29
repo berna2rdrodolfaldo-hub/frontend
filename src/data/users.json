@@ -8,7 +8,7 @@
   },
   {
     "id": "user-1",
-    "name": "Administrador Este",
+    "name": "Admin Tejar",
     "carnet": "1234567",
     "password": "admin123",
     "role": "ADMIN",
@@ -16,7 +16,7 @@
   },
   {
     "id": "user-3",
-    "name": "Administrador Oeste",
+    "name": "Admin Ostria Gutierrez ",
     "carnet": "12345678",
     "password": "1234",
     "role": "ADMIN",
