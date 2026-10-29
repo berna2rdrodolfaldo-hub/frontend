@@ -56,7 +56,7 @@
   },
   {
     "name": "marco",
-    "carnet": "0002",
+    "carnet": "0004",
     "password": "123",
     "role": "TRABAJADOR",
     "assignedStationId": "4",
