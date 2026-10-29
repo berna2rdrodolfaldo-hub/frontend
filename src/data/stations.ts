@@ -5,7 +5,7 @@ import naylerImg from "../Imagenes/nayler.png";
 import juanaImg from "../Imagenes/juanazurduy.png";
 import oqharikunaImg from "../Imagenes/oqharikuna.png";
 import trebolImg from "../Imagenes/trebol.png";
-import elmorroImg from "../Imagenes/elmorro.png";
+import elmorro from "../Imagenes/elmorro.png";
 
 export interface Comment {
   id: string;
@@ -133,7 +133,7 @@ export const stations: Station[] = [
     fuel: true,
     fuels: { especial: false, premium: true, diesel: true, gnv: false },
     queue: 18,
-    image: elmorroImg,
+    image: elmorro,
     prices: { especial: "Bs 6.96", premium: "Bs 11.00", diesel: "Bs 9.80", gnv: "Bs 2.73" },
     comments: []
   }
