@@ -7,13 +7,11 @@ import "./StationsPage.css";
 function StationsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("todos");
-  
-  // Función auxiliar para fusionar y garantizar que NUNCA falten surtidores
+
   const getSafeStationsList = (incomingList: any[]) => {
     if (!Array.isArray(incomingList) || incomingList.length === 0) {
       return initialStations;
     }
-    // Si viene una lista pero le faltan estaciones respecto a las originales, las reparamos
     if (incomingList.length < initialStations.length) {
       return initialStations.map((initS: any) => {
         const found = incomingList.find((p: any) => String(p.id) === String(initS.id));
@@ -36,7 +34,6 @@ function StationsPage() {
     return initialStations;
   });
 
-  // Cargar datos desde el servidor en Render con protección contra pérdida de estaciones
   useEffect(() => {
     const fetchStationsFromCloud = async () => {
       try {
@@ -52,7 +49,6 @@ function StationsPage() {
         console.warn("No se pudo conectar al servidor de Render, usando respaldo local:", error);
       }
 
-      // Fallback a localStorage si falla la red
       try {
         const saved = localStorage.getItem("sas_stations");
         if (saved) {
@@ -73,7 +69,6 @@ function StationsPage() {
     fetchStationsFromCloud();
   }, []);
 
-  // Escuchar cambios guardados desde el Panel Admin o en otras pestañas
   useEffect(() => {
     const handleStorageChange = () => {
       const saved = localStorage.getItem("sas_stations");
@@ -96,21 +91,10 @@ function StationsPage() {
       station.name.toLowerCase().includes(search.toLowerCase()) ||
       station.location.toLowerCase().includes(search.toLowerCase());
 
-    if (filter === "abiertos") {
-      return matchesSearch && station.open;
-    }
-
-    if (filter === "cerrados") {
-      return matchesSearch && !station.open;
-    }
-
-    if (filter === "combustible") {
-      return matchesSearch && station.fuel;
-    }
-
-    if (filter === "sin-combustible") {
-      return matchesSearch && !station.fuel;
-    }
+    if (filter === "abiertos") return matchesSearch && station.open;
+    if (filter === "cerrados") return matchesSearch && !station.open;
+    if (filter === "combustible") return matchesSearch && station.fuel;
+    if (filter === "sin-combustible") return matchesSearch && !station.fuel;
 
     return matchesSearch;
   });
@@ -123,9 +107,7 @@ function StationsPage() {
         <header className="page-header">
           <span>SURTIDORES</span>
           <h1>Estaciones de servicio</h1>
-          <p>
-            Consulta precios, disponibilidad, estado y cantidad de autos.
-          </p>
+          <p>Consulta precios, disponibilidad, estado y cantidad de autos.</p>
         </header>
 
         <section className="stations-controls">
@@ -139,10 +121,7 @@ function StationsPage() {
             />
           </div>
 
-          <select
-            value={filter}
-            onChange={(event) => setFilter(event.target.value)}
-          >
+          <select value={filter} onChange={(event) => setFilter(event.target.value)}>
             <option value="todos">Todos</option>
             <option value="abiertos">Abiertos</option>
             <option value="cerrados">Cerrados</option>
