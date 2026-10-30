@@ -7,21 +7,46 @@ import "./StationsPage.css";
 function StationsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("todos");
-  const [stations, setStations] = useState<any[]>(initialStations);
+  
+  // Función auxiliar para fusionar y garantizar que NUNCA falten surtidores
+  const getSafeStationsList = (incomingList: any[]) => {
+    if (!Array.isArray(incomingList) || incomingList.length === 0) {
+      return initialStations;
+    }
+    // Si viene una lista pero le faltan estaciones respecto a las originales, las reparamos
+    if (incomingList.length < initialStations.length) {
+      return initialStations.map((initS: any) => {
+        const found = incomingList.find((p: any) => String(p.id) === String(initS.id));
+        return found || initS;
+      });
+    }
+    return incomingList;
+  };
 
-  // Cargar datos desde el servidor definitivo en Render al iniciar la página
+  const [stations, setStations] = useState<any[]>(() => {
+    try {
+      const saved = localStorage.getItem("sas_stations");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return getSafeStationsList(parsed);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return initialStations;
+  });
+
+  // Cargar datos desde el servidor en Render con protección contra pérdida de estaciones
   useEffect(() => {
     const fetchStationsFromCloud = async () => {
       try {
         const response = await fetch(`https://frontend-9rgm.onrender.com/api/stations?t=${Date.now()}`);
         if (response.ok) {
           const cloudStations = await response.json();
-          if (Array.isArray(cloudStations) && cloudStations.length > 0) {
-            setStations(cloudStations);
-            // Actualizar también el almacenamiento local como respaldo
-            localStorage.setItem("sas_stations", JSON.stringify(cloudStations));
-            return;
-          }
+          const safeCloudList = getSafeStationsList(cloudStations);
+          setStations(safeCloudList);
+          localStorage.setItem("sas_stations", JSON.stringify(safeCloudList));
+          return;
         }
       } catch (error) {
         console.warn("No se pudo conectar al servidor de Render, usando respaldo local:", error);
@@ -32,15 +57,9 @@ function StationsPage() {
         const saved = localStorage.getItem("sas_stations");
         if (saved) {
           const parsed = JSON.parse(saved);
-          const hasLegacyData = parsed.some((s: any) => 
-            s.name === "Surtidor Central" || s.name === "Surtidor Norte"
-          );
-          if (hasLegacyData) {
-            localStorage.setItem("sas_stations", JSON.stringify(initialStations));
-            setStations(initialStations);
-          } else {
-            setStations(parsed);
-          }
+          const safeList = getSafeStationsList(parsed);
+          setStations(safeList);
+          localStorage.setItem("sas_stations", JSON.stringify(safeList));
         } else {
           localStorage.setItem("sas_stations", JSON.stringify(initialStations));
           setStations(initialStations);
@@ -59,7 +78,12 @@ function StationsPage() {
     const handleStorageChange = () => {
       const saved = localStorage.getItem("sas_stations");
       if (saved) {
-        setStations(JSON.parse(saved));
+        try {
+          const parsed = JSON.parse(saved);
+          setStations(getSafeStationsList(parsed));
+        } catch (e) {
+          console.error(e);
+        }
       }
     };
 
