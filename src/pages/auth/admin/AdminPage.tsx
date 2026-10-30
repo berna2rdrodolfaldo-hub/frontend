@@ -40,23 +40,25 @@ function AdminPage() {
       const stored = localStorage.getItem("sas_stations");
       if (stored) {
         const list = JSON.parse(stored);
-        const match = list.find((s: any) => String(s.id) === String(assignedStation?.id));
-        if (match) {
-          return {
-            ...match,
-            fuels: {
-              especial: match.fuels?.especial ?? true,
-              premium: match.fuels?.premium ?? true,
-              diesel: match.fuels?.diesel ?? true,
-              gnv: match.fuels?.gnv ?? true,
-            },
-            prices: {
-              especial: match.prices?.especial || assignedStation?.prices?.especial || "Bs 3.74",
-              premium: match.prices?.premium || assignedStation?.prices?.premium || "Bs 4.79",
-              diesel: match.prices?.diesel || assignedStation?.prices?.diesel || "Bs 3.72",
-              gnv: match.prices?.gnv || assignedStation?.prices?.gnv || "Bs 2.25",
-            }
-          };
+        if (Array.isArray(list)) {
+          const match = list.find((s: any) => String(s.id) === String(assignedStation?.id));
+          if (match) {
+            return {
+              ...match,
+              fuels: {
+                especial: match.fuels?.especial ?? true,
+                premium: match.fuels?.premium ?? true,
+                diesel: match.fuels?.diesel ?? true,
+                gnv: match.fuels?.gnv ?? true,
+              },
+              prices: {
+                especial: match.prices?.especial || assignedStation?.prices?.especial || "Bs 3.74",
+                premium: match.prices?.premium || assignedStation?.prices?.premium || "Bs 4.79",
+                diesel: match.prices?.diesel || assignedStation?.prices?.diesel || "Bs 3.72",
+                gnv: match.prices?.gnv || assignedStation?.prices?.gnv || "Bs 2.25",
+              }
+            };
+          }
         }
       }
     } catch (e) {
@@ -127,7 +129,7 @@ function AdminPage() {
     }
   }, [assignedStation?.id, isOwner]);
 
-  // Guardar modificaciones operativas y precios de forma persistente (LocalStorage + Servidor en la nube Render)
+  // CORRECCIÓN CLAVE: Asegurar la persistencia y actualización correcta del arreglo global en LocalStorage
   const handleSaveChanges = async () => {
     if (assignedStation) {
       const calculatedLevel = getQueueLevelFromCount(queueCountInput);
@@ -151,21 +153,28 @@ function AdminPage() {
 
       try {
         const storedStations = localStorage.getItem("sas_stations");
-        let list = storedStations ? JSON.parse(storedStations) : [...stations];
+        // Aseguramos que si ya existe una lista previa en localStorage, se use esa. Si no, usamos el archivo stations base.
+        let list = storedStations ? JSON.parse(storedStations) : [];
+        if (!Array.isArray(list) || list.length === 0) {
+          list = [...stations];
+        }
+
         const idx = list.findIndex((s: any) => String(s.id) === String(assignedStation.id));
 
         if (idx !== -1) {
+          // Reemplazamos únicamente el surtidor modificado manteniendo los demás intactos
           list[idx] = updatedData;
         } else {
           list.push(updatedData);
         }
 
+        // Guardamos el arreglo completo con TODOS los surtidores
         localStorage.setItem("sas_stations", JSON.stringify(list));
       } catch (e) {
         console.error("Error al guardar en localStorage", e);
       }
 
-      // 👇 Sincronización automática con el servidor backend desplegado en Render (URL definitiva)
+      // Sincronización automática con el servidor backend desplegado en Render
       try {
         await fetch(`https://frontend-9rgm.onrender.com/api/stations/${assignedStation.id}`, {
           method: "PUT",
@@ -225,7 +234,7 @@ function AdminPage() {
     }
   };
 
-  // Publicar comentario/reporte
+  // Publicar comentario/reporte manteniendo la integridad del array global
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
@@ -243,7 +252,11 @@ function AdminPage() {
     
     try {
       const storedStations = localStorage.getItem("sas_stations");
-      let list = storedStations ? JSON.parse(storedStations) : [...stations];
+      let list = storedStations ? JSON.parse(storedStations) : [];
+      if (!Array.isArray(list) || list.length === 0) {
+        list = [...stations];
+      }
+
       const idx = list.findIndex((s: any) => String(s.id) === String(assignedStation?.id));
       if (idx !== -1) {
         list[idx].comments = updatedComments;
