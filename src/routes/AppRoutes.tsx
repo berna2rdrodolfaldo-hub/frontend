@@ -7,7 +7,6 @@ import StationDetailPage from "../pages/StationDetailPage";
 import StatisticsPage from "../pages/StatisticsPage";
 import InformationPage from "../pages/InformationPage";
 import AdminPage from "../pages/auth/admin/AdminPage";
-import DeveloperPage from "../pages/auth/developer/DeveloperPage";
 import WorkerPage from "../pages/auth/worker/WorkerPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -40,16 +39,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["DUENO", "ADMIN", "DEVELOPER"]}>
             <AdminPage />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* RUTA EXCLUSIVA DESARROLLADOR */}
-      <Route
-        path="/developer"
-        element={
-          <ProtectedRoute allowedRoles={["DEVELOPER"]}>
-            <DeveloperPage />
           </ProtectedRoute>
         }
       />
