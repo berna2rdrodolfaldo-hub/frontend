@@ -10,13 +10,26 @@ function HomePage() {
   const navigate = useNavigate();
   const user = authRepository.getCurrentUser();
 
-  // Estado reactivo cargado con seguridad desde localStorage
+  // Estado reactivo cargado con seguridad desde localStorage y protegido contra listas incompletas
   const [stations, setStations] = useState(() => {
     try {
       const saved = localStorage.getItem("sas_stations");
       if (!saved) return initialStations;
       const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) && parsed.length > 0 ? parsed : initialStations;
+      
+      if (Array.isArray(parsed)) {
+        // Si el localStorage tiene menos surtidores que los originales, los reparamos y unimos automáticamente
+        if (parsed.length < initialStations.length) {
+          const merged = initialStations.map((initS: any) => {
+            const found = parsed.find((p: any) => String(p.id) === String(initS.id));
+            return found || initS;
+          });
+          localStorage.setItem("sas_stations", JSON.stringify(merged));
+          return merged;
+        }
+        return parsed.length > 0 ? parsed : initialStations;
+      }
+      return initialStations;
     } catch (e) {
       return initialStations;
     }
@@ -29,7 +42,17 @@ function HomePage() {
         const saved = localStorage.getItem("sas_stations");
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed)) setStations(parsed);
+          if (Array.isArray(parsed)) {
+            if (parsed.length < initialStations.length) {
+              const merged = initialStations.map((initS: any) => {
+                const found = parsed.find((p: any) => String(p.id) === String(initS.id));
+                return found || initS;
+              });
+              setStations(merged);
+            } else {
+              setStations(parsed);
+            }
+          }
         }
       } catch (e) {
         setStations(initialStations);
